@@ -12,27 +12,20 @@ class User < ActiveRecord::Base
 
   # validates :total_amount, numericality: { greater_than_or_equal_to: 0 }
 
-  has_many :orders
   has_many :accounts
-  has_many :balances, through: :accounts
-  has_many :balance_trade_symbols, through: :balances
-  has_many :balance_plans
-  has_many :order_plans, through: :balance_plans
-  has_many :balance_smarts
-  has_many :order_smarts, through: :balance_smarts
 
-  # 币币交易
-  def spot_balances
-    self.balances.joins(:account).where('accounts.ctype = ?', 'spot')
-  end
-  # 自定义价格
-  def custom_spot_balances
-    spot_balances.joins(:balance_trade_symbols).where('balance_trade_symbols.cus_enabled = ?', true).uniq
-  end
+  # # 币币交易
+  # def spot_balances
+  #   self.balances.joins(:account).where('accounts.ctype = ?', 'spot')
+  # end
+  # # 自定义价格
+  # def custom_spot_balances
+  #   spot_balances.joins(:balance_trade_symbols).where('balance_trade_symbols.cus_enabled = ?', true).uniq
+  # end
 
-  def otc_balances
-    self.accounts.find_by(ctype: 'otc').try(:balances)
-  end
+  # def otc_balances
+  #   self.accounts.find_by(ctype: 'otc').try(:balances)
+  # end
 
   def huobi_api
     if self.access_key.present? && self.secret_key.present?
