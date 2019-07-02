@@ -8,6 +8,10 @@ namespace :jobs do
     TradeSymbolsPriceFetchJob.perform_later()
     # 10s一次
     BalancesFetchJob.perform_later()
+    # 10s一次
+    OrdersFetchJob.perform_later()
+
+    BalancesJob.perform_later()
 
     # 抓取平台的 成交订单 价格和数量
     # TradeRecordsWorker.perform_at(10.seconds.from_now)

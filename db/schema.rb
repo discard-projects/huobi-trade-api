@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_07_02_091303) do
+ActiveRecord::Schema.define(version: 2019_07_02_114929) do
 
   create_table "accounts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "user_id", null: false
@@ -23,6 +23,19 @@ ActiveRecord::Schema.define(version: 2019_07_02_091303) do
     t.index ["user_id"], name: "index_accounts_on_user_id"
   end
 
+  create_table "balance_intervals", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "balance_id", null: false
+    t.bigint "trade_symbol_id", null: false
+    t.decimal "buy_price", precision: 20, scale: 10, default: "0.0"
+    t.decimal "sell_price", precision: 20, scale: 10, default: "0.0"
+    t.decimal "amount", precision: 20, scale: 10, default: "0.0"
+    t.boolean "enabled", default: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["balance_id"], name: "index_balance_intervals_on_balance_id"
+    t.index ["trade_symbol_id"], name: "index_balance_intervals_on_trade_symbol_id"
+  end
+
   create_table "balances", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "account_id", null: false
     t.bigint "user_id", null: false
@@ -33,6 +46,19 @@ ActiveRecord::Schema.define(version: 2019_07_02_091303) do
     t.datetime "updated_at", precision: 6, null: false
     t.index ["account_id"], name: "index_balances_on_account_id"
     t.index ["user_id"], name: "index_balances_on_user_id"
+  end
+
+  create_table "order_intervals", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "balance_interval_id", null: false
+    t.decimal "price", precision: 20, scale: 10
+    t.decimal "amount", precision: 20, scale: 10
+    t.integer "category", limit: 1
+    t.integer "status", limit: 1
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.string "ancestry"
+    t.index ["ancestry"], name: "index_order_intervals_on_ancestry"
+    t.index ["balance_interval_id"], name: "index_order_intervals_on_balance_interval_id"
   end
 
   create_table "orders", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -56,15 +82,18 @@ ActiveRecord::Schema.define(version: 2019_07_02_091303) do
     t.decimal "field_fees", precision: 20, scale: 10, comment: "已成交手续费（买入为基础币，卖出为计价币）"
     t.decimal "field_profit", precision: 20, scale: 10, default: "0.0", comment: "已成交利润"
     t.datetime "hfinish_at"
-    t.string "triggerable_type"
-    t.bigint "triggerable_id"
+    t.string "balancable_type"
+    t.bigint "balancable_id"
+    t.string "tradable_type"
+    t.bigint "tradable_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.string "ancestry"
     t.index ["account_id"], name: "index_orders_on_account_id"
     t.index ["ancestry"], name: "index_orders_on_ancestry"
+    t.index ["balancable_type", "balancable_id"], name: "index_orders_on_balancable_type_and_balancable_id"
+    t.index ["tradable_type", "tradable_id"], name: "index_orders_on_tradable_type_and_tradable_id"
     t.index ["trade_symbol_id"], name: "index_orders_on_trade_symbol_id"
-    t.index ["triggerable_type", "triggerable_id"], name: "index_orders_on_triggerable_type_and_triggerable_id"
     t.index ["user_id"], name: "index_orders_on_user_id"
   end
 
@@ -118,8 +147,11 @@ ActiveRecord::Schema.define(version: 2019_07_02_091303) do
   end
 
   add_foreign_key "accounts", "users"
+  add_foreign_key "balance_intervals", "balances"
+  add_foreign_key "balance_intervals", "trade_symbols"
   add_foreign_key "balances", "accounts"
   add_foreign_key "balances", "users"
+  add_foreign_key "order_intervals", "balance_intervals"
   add_foreign_key "orders", "accounts"
   add_foreign_key "orders", "trade_symbols"
   add_foreign_key "orders", "users"

@@ -1,4 +1,7 @@
 class TradeSymbol < ApplicationRecord
+
+  has_many :balance_intervals
+
   def current_price
     close || 0
   end
@@ -13,7 +16,14 @@ class TradeSymbol < ApplicationRecord
   end
 
   def users
-    []
-    # User.joins(:balance_plans).where('balance_plans.trade_symbol_id = ?', self.id).uniq | User.joins(:balance_trade_symbols).where('balance_trade_symbols.trade_symbol_id = ?', self.id).uniq | User.joins(:balance_smarts).where('balance_smarts.trade_symbol_id = ?', self.id).uniq
+    User.joins(:balance_intervals).where('balance_intervals.trade_symbol_id = ?', self.id).uniq# | User.joins(:balance_trade_symbols).where('balance_trade_symbols.trade_symbol_id = ?', self.id).uniq | User.joins(:balance_smarts).where('balance_smarts.trade_symbol_id = ?', self.id).uniq
+  end
+
+  def update_market_detail
+    data = Huobi.new.market_detail(self.symbol)
+    if data && data['status'] == 'ok'
+      tick = data['tick']
+      self.update(amount: tick['amount'], count: tick['count'], open: tick['open'], close: tick['close'], high: tick['high'], low: tick['low'])
+    end
   end
 end

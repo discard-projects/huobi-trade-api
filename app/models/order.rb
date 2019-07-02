@@ -5,10 +5,11 @@ class Order < ApplicationRecord
   belongs_to :user
   belongs_to :account
   belongs_to :trade_symbol
-  belongs_to :triggerable, polymorphic: true, optional: true
+  belongs_to :balancable, polymorphic: true, optional: true
+  belongs_to :tradable, polymorphic: true, optional: true
 
   # app购买 系统自动买入 定义价格买入卖出
-  enum kind: { kind_app: 0, kind_auto: 1, kind_custom_price: 2, kind_plan: 3, kind_smart: 4 }
+  enum kind: { kind_app: 0, kind_interval: 1, kind_plan: 2, kind_smart: 3 }
   ransacker :kind, formatter: proc { |v| kinds[v] }
 
   # category buy/sell
@@ -36,4 +37,26 @@ class Order < ApplicationRecord
     end
   end
 
+  def self.api_make account, trade_symbol, side, price, amount, kind
+    user = account.user
+    huobi_api = user.huobi_api
+    if huobi_api
+      price = price.floor(trade_symbol.price_precision)
+      amount = amount.floor(trade_symbol.amount_precision)
+      res = huobi_api.new_order(account.hid, trade_symbol.symbol, side, price, amount.to_i == amount ? amount.to_i : amount)
+      if res && res['status'] == 'ok'
+        Order.create(hid: res['data'], user_id: account.user_id, account: account, trade_symbol: trade_symbol, category: side == 'buy' ? 'category_buy' : 'category_sell', price: price, amount: amount, kind: kind)
+      else
+        data = huobi_api.orders trade_symbol.symbol
+        o = data && data['data'] && data['data'].find do |o|
+          o['price'] == price && o['amount'] == amount && Order.find_by(hid: o['hid']).blank?
+        end
+        if o
+          Order.create(hid: o['hid'], user_id: account.user_id, account: account, trade_symbol: trade_symbol, category: side == 'buy' ? 'category_buy' : 'category_sell', price: price, amount: amount, kind: kind)
+        else
+          raise "create #{trade_symbol.symbol} order error."
+        end
+      end
+    end
+  end
 end

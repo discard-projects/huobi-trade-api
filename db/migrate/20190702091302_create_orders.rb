@@ -22,7 +22,8 @@ class CreateOrders < ActiveRecord::Migration[6.0]
       t.decimal :field_profit, precision: 20, scale: 10, comment: '已成交利润', default: 0
       t.datetime :hfinish_at
 
-      t.references :triggerable, polymorphic: true
+      t.references :balancable, polymorphic: true
+      t.references :tradable, polymorphic: true
 
       t.timestamps
     end

@@ -25,6 +25,10 @@ class OrdersUserTradeSymbolFetchJob < ApplicationJob
 
         if order.kind.blank?
           order.kind = 'kind_app'
+          if order.source == 'api'
+            user.slack_notifier&.ping "`#{order.symbol} order[#{order.id}] make by api, but not found interrelated obj immediately, you can check yourself`", {icon_emoji: ':warning:', mrkdwn: true} rescue nil
+            next
+          end
         end
 
         # order.status = 'status_created' if order.status.blank?

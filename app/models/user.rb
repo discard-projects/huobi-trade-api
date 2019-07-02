@@ -14,6 +14,9 @@ class User < ActiveRecord::Base
 
   has_many :accounts
   has_many :balances, through: :accounts
+  has_many :balance_intervals, through: :balances
+
+  has_many :orders
 
   # # 币币交易
   def spot_balances
