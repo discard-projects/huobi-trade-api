@@ -3,7 +3,7 @@ class ApplicationRecord < ActiveRecord::Base
 
   # 前期检测全局数据变化
   include Footprintable
-  has_footprints
+  # has_footprints
 
   def method_missing(method_name, *args, &block)
     case method_name

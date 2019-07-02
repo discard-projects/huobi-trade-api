@@ -2,8 +2,12 @@ namespace :jobs do
   task first_init: :environment do
     # only once
     AccountsFetchJob.perform_later()
-    TradeSymbolsFetchJob.set(wait: 1.minute).perform_later()
+    # 15.minutes one time
+    TradeSymbolsFetchJob.perform_later()
+    # 越快越好
     TradeSymbolsPriceFetchJob.perform_later()
+    # 10s一次
+    BalancesFetchJob.perform_later()
 
     # 抓取平台的 成交订单 价格和数量
     # TradeRecordsWorker.perform_at(10.seconds.from_now)

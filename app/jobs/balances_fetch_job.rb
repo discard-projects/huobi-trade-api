@@ -5,10 +5,11 @@ class BalancesFetchJob < ApplicationJob
     # Do something later
     User.find_each do |user|
       next unless user.trade_enabled
+
       huobi_api = user.huobi_api
       if huobi_api
         user.accounts.find_each do |account|
-          data = huobi_api.balances(account.cid)
+          data = huobi_api.balances(account.hid)
           # p account.cid, data
           data && data['data'] && data['data']['list'].each do |bal|
             balance = Balance.find_or_create_by(user: user, account: account, currency: bal['currency'])
@@ -21,5 +22,6 @@ class BalancesFetchJob < ApplicationJob
         end
       end
     end
+    BalancesFetchJob.set(wait: 10.second).perform_later()
   end
 end

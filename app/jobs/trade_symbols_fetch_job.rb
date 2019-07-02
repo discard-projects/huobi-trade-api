@@ -13,6 +13,6 @@ class TradeSymbolsFetchJob < ApplicationJob
         trade_symbol.symbol = tb['symbol']
       end
     end
-    TradeSymbolsFetchJob.perform_later()
+    TradeSymbolsFetchJob.set(wait: 15.minute).perform_later()
   end
 end

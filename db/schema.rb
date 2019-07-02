@@ -25,12 +25,14 @@ ActiveRecord::Schema.define(version: 2019_07_02_082240) do
 
   create_table "balances", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "account_id", null: false
+    t.bigint "user_id", null: false
     t.string "currency"
     t.decimal "trade_balance", precision: 20, scale: 10, default: "0.0"
     t.decimal "frozen_balance", precision: 20, scale: 10, default: "0.0"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["account_id"], name: "index_balances_on_account_id"
+    t.index ["user_id"], name: "index_balances_on_user_id"
   end
 
   create_table "trade_symbols", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -84,4 +86,5 @@ ActiveRecord::Schema.define(version: 2019_07_02_082240) do
 
   add_foreign_key "accounts", "users"
   add_foreign_key "balances", "accounts"
+  add_foreign_key "balances", "users"
 end
