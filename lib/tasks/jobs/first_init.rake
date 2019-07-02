@@ -1,10 +1,11 @@
 namespace :jobs do
   task first_init: :environment do
     AccountsFetchJob.perform_later()
-    # 循环创建job 抓取TradeSymbols交易对
-    # TradeSymbolsWorker.perform_async()
-    # 循环创建job 更新价格 10s
-    # TradeSymbolsPriceWorker.perform_async()
+    TradeSymbolsFetchJob.set(wait: 1.minute).perform_later()
+    TradeSymbolsPriceFetchJob.perform_later()
+
+
+
     # 抓取平台的 成交订单 价格和数量
     # TradeRecordsWorker.perform_at(10.seconds.from_now)
     # 获取用户用户货币数 冻结数量/可交易数量
