@@ -3,6 +3,7 @@ development:
   <<: *default
   sys_hosts:
   - localhost
+  - moapi.local.com
   - moapitest.free.idcfengye.com
   managers:
   - swfeiyang@gmail.com
