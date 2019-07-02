@@ -12,21 +12,32 @@
 default: &default
   adapter: mysql2
   encoding: utf8mb4
-  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 10 } %>
   username: root
-  password:
+  #password: root123
+  password: 123456
   socket: /tmp/mysql.sock
 
 development:
-  <<: *default
-  database: huobi_auto_trade_development
+  primary:
+    <<: *default
+    database: huobi_auto_trade_development
+  logs:
+    <<: *default
+    database: huobi_auto_trade_logs_development
+    migrations_paths: db/logs_migrate
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
 # Do not set this db to the same as development or production.
 test:
-  <<: *default
-  database: huobi_auto_trade_test
+  primary:
+    <<: *default
+    database: huobi_auto_trade_test
+  logs:
+    <<: *default
+    database: huobi_auto_trade_logs_test
+    migrations_paths: db/logs_migrate
 
 # As with config/credentials.yml, you never want to store sensitive information,
 # like your database password, in your source code. If your source code is
@@ -48,7 +59,11 @@ test:
 #     url: <%= ENV['DATABASE_URL'] %>
 #
 production:
-  <<: *default
-  database: huobi_auto_trade_production
-  username: huobi_auto_trade
-  password: <%= ENV['HUOBI_AUTO_TRADE_DATABASE_PASSWORD'] %>
+  primary:
+    <<: *default
+    database: huobi_auto_trade_production
+  logs:
+    <<: *default
+    database: huobi_auto_trade_logs_production
+    migrations_paths: db/logs_migrate
+

@@ -1,9 +1,6 @@
-class ApplicationRecord < ActiveRecord::Base
+class ApplicationLogsRecord < ActiveRecord::Base
   self.abstract_class = true
-
-  # 前期检测全局数据变化
-  include Footprintable
-  has_footprints
+  establish_connection :logs
 
   def method_missing(method_name, *args, &block)
     case method_name

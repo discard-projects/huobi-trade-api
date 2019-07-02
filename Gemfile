@@ -1,4 +1,4 @@
-source 'https://rubygems.org'
+source 'https://gems.ruby-china.com'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 ruby '2.6.3'
@@ -10,7 +10,7 @@ gem 'mysql2', '>= 0.4.4'
 # Use Puma as the app server
 gem 'puma', '~> 3.11'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
-# gem 'jbuilder', '~> 2.5'
+gem 'jbuilder', '~> 2.5'
 # Use Redis adapter to run Action Cable in production
 # gem 'redis', '~> 4.0'
 # Use Active Model has_secure_password
@@ -22,8 +22,47 @@ gem 'puma', '~> 3.11'
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.4.2', require: false
 
+# Auth
+gem 'devise'
+gem 'devise_token_auth'
+
+# job
+gem 'sidekiq'
+
+# AASM is a continuation of the acts-as-state-machine rails plugin, built for plain Ruby objects
+gem 'aasm'
+# tree
+gem 'ancestry'
+# position
+gem 'acts_as_list'
+# logs
+gem 'footprintable'
+# Self Gems
+# https://github.com/rails-gems/timequery
+gem 'timequery'
+# https://github.com/rails-gems/split_routes
+gem 'split_routes'
+# Base Resource include: reform, reform-rails, kaminari, ransack
+gem 'ransack'
+gem 'kaminari'
+gem 'reform'
+gem 'reform-rails'
+gem 'base_resource', github: 'rails-gems/base-resource'
+
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible
-# gem 'rack-cors'
+gem 'rack-cors'
+# Http
+gem 'httparty'
+# split_routes
+gem 'split_routes'
+# 定时任务
+gem 'whenever', require: false
+
+
+# Slack api 封装
+gem 'slack-notifier'
+# 异常监控
+gem 'exception_notification'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

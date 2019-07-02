@@ -1,0 +1,20 @@
+default: &default
+development:
+  <<: *default
+  sys_hosts:
+  - localhost
+  - moapitest.free.idcfengye.com
+  managers:
+  - swfeiyang@gmail.com
+  sidekiq_secret: 'mars1234'
+  slack_webhook_url: 'https://hooks.slack.com/services/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'
+test:
+  <<: *default
+  super_admins:
+  - swfeiyang@gmail.com
+production:
+  <<: *default
+  sys_hosts:
+  - localhost
+  super_admins:
+  - swfeiyang@gmail.com
