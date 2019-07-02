@@ -1,0 +1,16 @@
+---
+:verbose: false
+:concurrency: 5
+:timeout: 300
+staging:
+  :concurrency: 10
+production:
+  :concurrency: 20
+:queues:
+- highest
+- higher
+- high
+- default
+- low
+- lower
+- lowest
