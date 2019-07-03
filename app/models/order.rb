@@ -26,7 +26,7 @@ class Order < ApplicationRecord
     event :status_partial_filled do
       transitions :from => :status_created, :to => :status_partial_filled
     end
-    event :status_filled do
+    event :status_filled, after: :after_status_traded do
       transitions :from => [:status_created, :status_partial_filled], :to => :status_filled
     end
     event :status_finished do
@@ -48,7 +48,7 @@ class Order < ApplicationRecord
     if category == 'category_sell' && self.field_profit != 0
       message.push("本次盈利: `#{trade_symbol.quote_currency} #{self.field_profit}`")
     end
-    message.push "时间: #{self.finish_at.try(:strftime, '%Y-%m-%d %H:%M:%S')}"
+    message.push "时间: #{self.hfinish_at.try(:strftime, '%Y-%m-%d %H:%M:%S')}"
     message.push "邮箱: #{self.user.email}"
     message.push "- - - - - - - - - End - - - - - - - - -"
     user.slack_notifier&.ping message.join("\n\n"), { icon_emoji: ':watermelon:', mrkdwn: true } rescue nil
@@ -80,6 +80,12 @@ class Order < ApplicationRecord
   end
 
   private
+
+  def after_status_traded
+    if self.tradable&.may_status_traded?
+      self.tradable.status_traded!
+    end
+  end
 
   def after_status_canceled
     # 如果有归属，归属也取消掉
