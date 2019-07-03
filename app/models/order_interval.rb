@@ -26,7 +26,7 @@ class OrderInterval < ApplicationRecord
     event :status_closed do
       transitions :from => [:status_created, :status_trading, :status_traded], :to => :status_closed
     end
-    event :status_canceled do
+    event :status_canceled, after_commit: :after_commit_status_canceled do
       transitions :from => [:status_created, :status_trading], :to => :status_canceled
     end
   end
@@ -48,10 +48,31 @@ class OrderInterval < ApplicationRecord
       sell_order_interval = balance_interval.order_intervals.create(price: balance_interval.sell_price, amount: sell_amount, category: 'sell')
       if sell_order_interval.may_status_trading?
         sell_order_interval.status_trading!
-        self.update_column(parent, sell_order_interval)
+        self.update(parent: sell_order_interval)
       end
     else # category_sell
-      self.children.last.order.update(parent: self.order)
+      # 只会有一个孩子
+      self.children.each do |sub_order_interval|
+        sub_order_interval.order.update(parent: self.order)
+      end
+      sell_order = self.order
+      sum_children_price = self.children.status_traded.inject(0) { |sum, child| sum + child.order.price * child.field_amount }
+      field_profit = sell_order.price * sell_order.field_amount - sell_order.field_fees - sum_children_price
+      sell_order.update(field_profit: field_profit)
+    end
+  end
+
+  def after_commit_status_canceled
+    # 如果取消的卖出订单需要重新下单
+    if self.category == 'category_sell'
+      sell_amount = self.children.status_traded.inject(0) { |sum, child| sum + child.order.resolve_amount }
+      sell_order_interval = balance_interval.order_intervals.create(price: balance_interval.sell_price, amount: sell_amount, category: 'sell')
+      if sell_order_interval.may_status_trading?
+        sell_order_interval.status_trading!
+        self.children.each do |buy_order_interval|
+          buy_order_interval.update(parent: sell_order_interval)
+        end
+      end
     end
   end
 end
