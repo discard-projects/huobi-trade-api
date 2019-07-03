@@ -20,7 +20,7 @@ class OrderInterval < ApplicationRecord
     event :status_trading, after: :after_status_trading do
       transitions :from => :status_created, :to => :status_trading
     end
-    event :status_traded, after: :after_status_traded do
+    event :status_traded, after: :after_status_traded, after_commit: :after_commit_status_traded do
       transitions :from => :status_trading, :to => :status_traded
     end
     event :status_closed do
@@ -55,15 +55,24 @@ class OrderInterval < ApplicationRecord
     else # category_sell
       # 只会有一个孩子
       sell_order = self.order
-      self.children.each do |buy_order_interval|
+      self.children.status_traded.each do |buy_order_interval|
         buy_order_interval.order.update(parent: sell_order)
       end
-      sum_children_price = self.children.status_traded.inject(0) { |sum, child| sum + child.order.price * child.field_amount }
+      sum_children_price = self.children.status_traded.inject(0) { |sum, child| sum + child.order.price * child.order.field_amount }
       field_profit = sell_order.price * sell_order.field_amount - sell_order.field_fees - sum_children_price
       sell_order.update(field_profit: field_profit)
     end
+  end
+
+  def after_commit_status_traded
+    if self.category == 'category_sell'
+      self.children.each do |buy_interval|
+        buy_interval.status_closed! if buy_interval.may_status_closed?
+      end
+      self.status_closed! if self.may_status_closed?
+    end
     # 发送买入卖出通知
-    self.order.send_traded_notification
+    self.order.send_traded_notification rescue nil
   end
 
   def after_commit_status_canceled
