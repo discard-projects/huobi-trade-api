@@ -44,7 +44,8 @@ class OrderInterval < ApplicationRecord
 
   def after_status_traded
     if self.category == 'category_buy'
-      sell_order_interval = balance_interval.order_intervals.create(price: balance_interval.sell_price, amount: balance_interval.amount, category: 'sell')
+      sell_amount = self.order.resolve_amount
+      sell_order_interval = balance_interval.order_intervals.create(price: balance_interval.sell_price, amount: sell_amount, category: 'sell')
       if sell_order_interval.may_status_trading?
         sell_order_interval.status_trading!
         self.update_column(parent, sell_order_interval)

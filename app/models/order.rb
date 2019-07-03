@@ -37,6 +37,10 @@ class Order < ApplicationRecord
     end
   end
 
+  def resolve_amount
+    (self.field_amount - self.field_fees).floor(trade_symbol.price_precision)
+  end
+
   def self.api_make account, trade_symbol, side, price, amount, kind
     user = account.user
     huobi_api = user.huobi_api
