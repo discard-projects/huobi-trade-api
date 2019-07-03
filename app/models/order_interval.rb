@@ -10,7 +10,7 @@ class OrderInterval < ApplicationRecord
   ransacker :category, formatter: proc { |v| categories[v] }
 
   # status
-  enum status: { status_created: 0, status_trading: 1, status_traded: 2, status_closed: 3, status_canceled: 3 }
+  enum status: { status_created: 0, status_trading: 1, status_traded: 2, status_closed: 3, status_canceled: 4 }
   ransacker :status, formatter: proc { |v| statuses[v] }
 
   aasm :column => :status, :enum => true do
