@@ -41,6 +41,19 @@ class Order < ApplicationRecord
     (self.field_amount - self.field_fees).floor(trade_symbol.price_precision)
   end
 
+  def send_traded_notification
+    message = [
+      "主题: `#{self.kind} #{self.category == 'category_sell' ? '卖出' : '买入'}#{trade_symbol.base_currency}` [#{self.id}], 价格: #{self.price}, 数量: #{self.amount}, 约合: #{trade_symbol.quote_currency} #{self.field_amount * self.price}",
+    ]
+    if category == 'category_sell' && self.field_profit != 0
+      message.push("本次盈利: `#{trade_symbol.quote_currency} #{self.field_profit}`")
+    end
+    message.push "时间: #{self.finish_at.try(:strftime, '%Y-%m-%d %H:%M:%S')}"
+    message.push "邮箱: #{self.user.email}"
+    message.push "- - - - - - - - - End - - - - - - - - -"
+    user.slack_notifier&.ping message.join("\n\n"), { icon_emoji: ':watermelon:', mrkdwn: true } rescue nil
+  end
+
   def self.api_make account, trade_symbol, side, price, amount, kind
     user = account.user
     huobi_api = user.huobi_api

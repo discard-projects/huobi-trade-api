@@ -43,6 +43,7 @@ class OrderInterval < ApplicationRecord
   end
 
   def after_status_traded
+    # 如果是买入成功，需要下单卖出
     if self.category == 'category_buy'
       sell_amount = self.order.resolve_amount
       sell_order_interval = balance_interval.order_intervals.create(price: balance_interval.sell_price, amount: sell_amount, category: 'sell')
@@ -50,16 +51,19 @@ class OrderInterval < ApplicationRecord
         sell_order_interval.status_trading!
         self.update(parent: sell_order_interval)
       end
+    # 如果是卖出需要计算利润
     else # category_sell
       # 只会有一个孩子
-      self.children.each do |sub_order_interval|
-        sub_order_interval.order.update(parent: self.order)
-      end
       sell_order = self.order
+      self.children.each do |buy_order_interval|
+        buy_order_interval.order.update(parent: sell_order)
+      end
       sum_children_price = self.children.status_traded.inject(0) { |sum, child| sum + child.order.price * child.field_amount }
       field_profit = sell_order.price * sell_order.field_amount - sell_order.field_fees - sum_children_price
       sell_order.update(field_profit: field_profit)
     end
+    # 发送买入卖出通知
+    self.order.send_traded_notification
   end
 
   def after_commit_status_canceled
