@@ -32,7 +32,7 @@ class Order < ApplicationRecord
     event :status_finished do
       transitions :from => [:status_filled], :to => :status_finished
     end
-    event :status_canceled do
+    event :status_canceled, after: :after_status_canceled do
       transitions :from => :status_created, :to => :status_canceled
     end
   end
@@ -44,6 +44,7 @@ class Order < ApplicationRecord
       price = price.floor(trade_symbol.price_precision)
       amount = amount.floor(trade_symbol.amount_precision)
       res = huobi_api.new_order(account.hid, trade_symbol.symbol, side, price, amount.to_i == amount ? amount.to_i : amount)
+      p res
       if res && res['status'] == 'ok'
         Order.create(hid: res['data'], user_id: account.user_id, account: account, trade_symbol: trade_symbol, category: side == 'buy' ? 'category_buy' : 'category_sell', price: price, amount: amount, kind: kind)
       else
@@ -54,9 +55,19 @@ class Order < ApplicationRecord
         if o
           Order.create(hid: o['hid'], user_id: account.user_id, account: account, trade_symbol: trade_symbol, category: side == 'buy' ? 'category_buy' : 'category_sell', price: price, amount: amount, kind: kind)
         else
+          user.slack_notifier&.ping "[`error`] create #{trade_symbol.symbol} order error: #{res}", {icon_emoji: ':point_right:', mrkdwn: true} rescue nil
           raise "create #{trade_symbol.symbol} order error."
         end
       end
+    end
+  end
+
+  private
+
+  def after_status_canceled
+    # 如果有归属，归属也取消掉
+    if self.tradable&.may_status_canceled?
+      self.tradable.status_canceled!
     end
   end
 end

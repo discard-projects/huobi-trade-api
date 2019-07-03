@@ -18,6 +18,10 @@ defaults format: :json do
           resources :footprints, only: [:index]
         end
         resources :balance_intervals, only: [:index, :destroy]
+        resources :order_intervals, only: [:index, :show], model_name: 'OrderInterval' do
+          resources :footprints, only: [:index]
+        end
+
         # resources :balance_plans, only: [:index, :destroy]
         # resources :balance_smarts, only: [:index, :destroy]
         #

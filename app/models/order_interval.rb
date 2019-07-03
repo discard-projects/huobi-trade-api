@@ -3,19 +3,19 @@ class OrderInterval < ApplicationRecord
   has_ancestry
 
   belongs_to :balance_interval
-  has_one :order, as: :tradable
+  has_one :order, as: :tradable, dependent: :nullify
 
   # category buy/sell
   enum category: { category_buy: 0, category_sell: 1 }
   ransacker :category, formatter: proc { |v| categories[v] }
 
   # status
-  enum status: { status_created: 0, status_trading: 1, status_traded: 2, status_closed: 3 }
+  enum status: { status_created: 0, status_trading: 1, status_traded: 2, status_closed: 3, status_canceled: 3 }
   ransacker :status, formatter: proc { |v| statuses[v] }
 
   aasm :column => :status, :enum => true do
     state :status_created, :initial => true
-    state :status_trading, :status_traded, :status_closed
+    state :status_trading, :status_traded, :status_closed, :status_canceled
 
     event :status_trading, after: :after_status_trading do
       transitions :from => :status_created, :to => :status_trading
@@ -25,6 +25,9 @@ class OrderInterval < ApplicationRecord
     end
     event :status_closed do
       transitions :from => [:status_created, :status_trading, :status_traded], :to => :status_closed
+    end
+    event :status_canceled do
+      transitions :from => [:status_created, :status_trading], :to => :status_canceled
     end
   end
 
