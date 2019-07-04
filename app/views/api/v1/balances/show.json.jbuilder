@@ -10,7 +10,6 @@ json.item do
   end
 
   json.balance_plans []
-  json.balance_smarts []
 
   # json.balance_plans @balance.balance_plans do |balance_plan|
   #   json.(balance_plan, :id, :balance_id, :trade_symbol_id, :range_begin_price, :range_end_price, :interval_price, :open_price, :count, :enabled, :addition_count,  :created_time, :updated_time)
@@ -19,10 +18,10 @@ json.item do
   #   end
   # end
   #
-  # json.balance_smarts @balance.balance_smarts do |balance_smart|
-  #   json.(balance_smart, :id, :balance_id, :trade_symbol_id, :open_price, :interval_price, :count, :sell_percent, :enabled,  :created_time, :updated_time)
-  #   json.trade_symbol do
-  #     json.(balance_smart.trade_symbol, :id, :base_currency, :quote_currency)
-  #   end
-  # end
+  json.balance_smarts @balance.balance_smarts do |balance_smart|
+    json.(balance_smart, :id, :open_price, :amount, :rate_amount, :max_amount, :buy_percent, :sell_percent, :enabled,  :created_time, :updated_time)
+    json.trade_symbol do
+      json.(balance_smart.trade_symbol, :id, :base_currency, :quote_currency)
+    end
+  end
 end

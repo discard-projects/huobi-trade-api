@@ -23,5 +23,29 @@ module Api::BalanceForm
         end
       end
     end
+
+    collection :balance_smarts, populate_if_empty: BalanceSmart do
+      property :balance_id
+      property :trade_symbol_id
+      property :open_price
+      property :amount
+      property :buy_percent
+      property :rate_amount
+      property :max_amount
+      property :sell_percent
+
+      property :enabled
+
+      validates :balance_id, :trade_symbol_id, presence: true
+
+      validate :valid_values
+
+      def valid_values
+        if self.enabled && self.id.blank?
+          trade_symbol = TradeSymbol.find_by(id: self.trade_symbol_id)
+          errors.add(:open_price, "open_price[#{self.open_price}] 价格必须小于等于当前值 #{trade_symbol.current_price}") if self.open_price.to_f > trade_symbol.current_price * 1.005
+        end
+      end
+    end
   end
 end

@@ -9,12 +9,19 @@ json.items @balances do |balance|
     json.trade_symbol balance_interval.trade_symbol
   end
 
+  json.balance_smarts balance.balance_smarts do |balance_smart|
+    json.balance_smart balance_smart
+    json.trade_symbol balance_smart.trade_symbol
+  end
+
   json.enabled_items do
     json.固定值交易  balance.balance_intervals do |balance_interval|
       json.(balance_interval, :buy_price, :sell_price, :amount, :enabled)
     end
     json.计划交易 []
-    json.智能交易 []
+    json.智能交易 balance.balance_smarts do |balance_smart|
+      json.(balance_smart, :amount, :rate_amount, :max_amount, :buy_percent, :sell_percent, :enabled)
+    end
     # json.计划交易  balance.balance_plans do |balance_plan|
     #   json.(balance_plan, :range_begin_price, :interval_price, :count, :enabled)
     # end

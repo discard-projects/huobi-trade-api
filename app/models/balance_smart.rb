@@ -4,12 +4,17 @@ class BalanceSmart < ApplicationRecord
   has_many :order_smarts, dependent: :destroy
   has_many :orders, as: :balancable, dependent: :nullify
 
+  validates :buy_percent, numericality: { greater_than_or_equal_to: 0.5 }
+  validates :sell_percent, numericality: { greater_than_or_equal_to: 0.5 }
+  validates :open_price, :amount, :max_amount, numericality: { greater_than: 0 }
+  validates :rate_amount, numericality: { greater_than_or_equal_to: 1 }
+
   def next_should_buy_price
     (self.order_smarts.category_buy.status_traded.last.price * (1 - self.buy_percent * 0.01) || self.open_price).floor(trade_symbol.price_precision)
   end
 
   def next_should_buy_amount
-    (self.order_smarts.category_buy.status_traded.last.amount * (1 + self.sell_percent * 0.01)).floor(trade_symbol.amount_precision)
+    (self.order_smarts.category_buy.status_traded.last.amount * (1 + self.rate_amount * 0.01)).floor(trade_symbol.amount_precision)
   end
 
   def can_make_buy_order?
@@ -20,7 +25,8 @@ class BalanceSmart < ApplicationRecord
 
   def should_sell_price
     traded_order_smarts = self.order_smarts.category_buy.status_traded
-    (traded_order_smarts.sum(:total_price) / traded_order_smarts.sum(:real_amount) * self.sell_percent * 0.01).floor(trade_symbol.price_precision)
+    avg_price = traded_order_smarts.sum(:total_price) / traded_order_smarts.sum(:real_amount)
+    (avg_price * (1 + self.sell_percent * 0.01)).floor(trade_symbol.price_precision)
   end
 
   def should_sell_amount
