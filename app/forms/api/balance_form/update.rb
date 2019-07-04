@@ -41,9 +41,13 @@ module Api::BalanceForm
       validate :valid_values
 
       def valid_values
-        if self.enabled && self.id.blank?
-          trade_symbol = TradeSymbol.find_by(id: self.trade_symbol_id)
-          errors.add(:open_price, "open_price[#{self.open_price}] 价格必须小于等于当前值 #{trade_symbol.current_price}") if self.open_price.to_f > trade_symbol.current_price * 1.005
+        if self.enabled
+          if self.id.blank?
+            trade_symbol = TradeSymbol.find_by(id: self.trade_symbol_id)
+            errors.add(:open_price, "open_price[#{self.open_price}] 价格必须小于等于当前值 #{trade_symbol.current_price}") if self.open_price.to_f > trade_symbol.current_price * 1.005
+          else
+            errors.add(:enabled, "[open_price: #{self.open_price}, amount: #{self.amount}] can not reopen, please create a new one") unless self.model.enabled
+          end
         end
       end
     end

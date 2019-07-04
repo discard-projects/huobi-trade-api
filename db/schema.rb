@@ -78,7 +78,7 @@ ActiveRecord::Schema.define(version: 2019_07_04_050119) do
   end
 
   create_table "order_smarts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.bigint "balance_interval_id", null: false
+    t.bigint "balance_smart_id", null: false
     t.decimal "price", precision: 20, scale: 10
     t.decimal "amount", precision: 20, scale: 10, default: "0.0"
     t.decimal "resolve_amount", precision: 20, scale: 10, default: "0.0"
@@ -87,7 +87,7 @@ ActiveRecord::Schema.define(version: 2019_07_04_050119) do
     t.integer "status", limit: 1
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["balance_interval_id"], name: "index_order_smarts_on_balance_interval_id"
+    t.index ["balance_smart_id"], name: "index_order_smarts_on_balance_smart_id"
   end
 
   create_table "orders", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -183,7 +183,7 @@ ActiveRecord::Schema.define(version: 2019_07_04_050119) do
   add_foreign_key "balances", "accounts"
   add_foreign_key "balances", "users"
   add_foreign_key "order_intervals", "balance_intervals"
-  add_foreign_key "order_smarts", "balance_intervals"
+  add_foreign_key "order_smarts", "balance_smarts"
   add_foreign_key "orders", "accounts"
   add_foreign_key "orders", "trade_symbols"
   add_foreign_key "orders", "users"

@@ -4,10 +4,8 @@ class BalanceSmart < ApplicationRecord
   has_many :order_smarts, dependent: :destroy
   has_many :orders, as: :balancable, dependent: :nullify
 
-  validates :buy_percent, numericality: { greater_than_or_equal_to: 0.5 }
-  validates :sell_percent, numericality: { greater_than_or_equal_to: 0.5 }
-  validates :open_price, :amount, :max_amount, numericality: { greater_than: 0 }
-  validates :rate_amount, numericality: { greater_than_or_equal_to: 1 }
+  validates :buy_percent, :sell_percent, numericality: { greater_than_or_equal_to: 0.5 }
+  validates :open_price, :amount, :rate_amount, :max_amount, numericality: { greater_than: 0 }
 
   def next_should_buy_price
     (self.order_smarts.category_buy.status_traded.last.price * (1 - self.buy_percent * 0.01) || self.open_price).floor(trade_symbol.price_precision)

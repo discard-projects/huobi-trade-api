@@ -16,6 +16,8 @@ class User < ActiveRecord::Base
   has_many :balances, through: :accounts
   has_many :balance_intervals, through: :balances
   has_many :order_intervals, through: :balance_intervals
+  has_many :balance_smarts, through: :balances
+  has_many :order_smarts, through: :balance_smarts
 
   has_many :orders
 
