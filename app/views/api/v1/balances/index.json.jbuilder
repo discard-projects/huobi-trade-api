@@ -20,7 +20,8 @@ json.items @balances do |balance|
     end
     json.计划交易 []
     json.智能交易 balance.balance_smarts do |balance_smart|
-      json.(balance_smart, :amount, :rate_amount, :max_amount, :buy_percent, :sell_percent, :enabled)
+      json.(balance_smart, :amount, :open_price, :enabled, :resolve_amount, :next_should_buy_price, :next_should_buy_amount, :avg_price, :sell_percent, :should_sell_price, :should_sell_amount)
+      json.calc_should_sell_price "#{balance_smart.should_sell_price} = #{balance_smart.avg_price} + #{balance_smart.avg_price * balance_smart.sell_percent * 0.01}"
     end
     # json.计划交易  balance.balance_plans do |balance_plan|
     #   json.(balance_plan, :range_begin_price, :interval_price, :count, :enabled)

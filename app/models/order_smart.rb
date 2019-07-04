@@ -1,6 +1,6 @@
 class OrderSmart < ApplicationRecord
   include AASM
-  has_ancestry
+  # has_ancestry
 
   belongs_to :balance_smart
   has_one :order, as: :tradable, dependent: :nullify
@@ -65,14 +65,16 @@ class OrderSmart < ApplicationRecord
   end
 
   def after_status_traded
-    # 如果是买入成功，需要下单卖出
+    # 如果是卖出，更新利润
     if self.category == 'category_sell'
-      # 只会有一个孩子
       sell_order = self.order
       buyed_order_smarts = self.balance_smart.order_smarts.category_buy.status_traded
-      sum_children_price = buyed_order_smarts.inject(0) { |sum, child| sum + child.order.price * child.order.field_amount }
-      field_profit = sell_order.price * sell_order.field_amount - sell_order.field_fees - sum_children_price
+      sum_buyed_order_smart_price = buyed_order_smarts.inject(0) { |sum, buy_order_smart| sum + buy_order_smart.order.price * buy_order_smart.order.field_amount }
+      field_profit = sell_order.price * sell_order.field_amount - sell_order.field_fees - sum_buyed_order_smart_price
       sell_order.update(field_profit: field_profit)
+    else
+      p '===', self.order.field_amount - self.order.field_fees
+      self.update_column(:resolve_amount, self.order.field_amount - self.order.field_fees)
     end
   end
 
