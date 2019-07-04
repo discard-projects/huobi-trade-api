@@ -54,7 +54,7 @@ class Order < ApplicationRecord
     user.slack_notifier&.ping message.join("\n\n"), { icon_emoji: ':watermelon:', mrkdwn: true } rescue nil
   end
 
-  def self.api_make account, trade_symbol, side, price, amount, kind
+  def self.api_make! account, trade_symbol, side, price, amount, kind
     user = account.user
     huobi_api = user.huobi_api
     if huobi_api

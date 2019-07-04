@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_07_02_114929) do
+ActiveRecord::Schema.define(version: 2019_07_04_050119) do
 
   create_table "accounts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "user_id", null: false
@@ -36,6 +36,22 @@ ActiveRecord::Schema.define(version: 2019_07_02_114929) do
     t.index ["trade_symbol_id"], name: "index_balance_intervals_on_trade_symbol_id"
   end
 
+  create_table "balance_smarts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "balance_id", null: false
+    t.bigint "trade_symbol_id", null: false
+    t.decimal "open_price", precision: 20, scale: 10, comment: "起点下单价格"
+    t.decimal "buy_percent", precision: 20, scale: 10, default: "0.0", comment: "起点下跌百分比买入"
+    t.decimal "sell_percent", precision: 20, scale: 10, comment: "起点上涨百分比卖出"
+    t.decimal "amount", precision: 20, scale: 10, default: "0.0"
+    t.decimal "rate_amount", precision: 20, scale: 10, default: "1.0"
+    t.decimal "max_amount", precision: 20, scale: 10, default: "999999999.0"
+    t.boolean "enabled", default: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["balance_id"], name: "index_balance_smarts_on_balance_id"
+    t.index ["trade_symbol_id"], name: "index_balance_smarts_on_trade_symbol_id"
+  end
+
   create_table "balances", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "account_id", null: false
     t.bigint "user_id", null: false
@@ -59,6 +75,19 @@ ActiveRecord::Schema.define(version: 2019_07_02_114929) do
     t.string "ancestry"
     t.index ["ancestry"], name: "index_order_intervals_on_ancestry"
     t.index ["balance_interval_id"], name: "index_order_intervals_on_balance_interval_id"
+  end
+
+  create_table "order_smarts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "balance_interval_id", null: false
+    t.decimal "price", precision: 20, scale: 10
+    t.decimal "amount", precision: 20, scale: 10, default: "0.0"
+    t.decimal "resolve_amount", precision: 20, scale: 10, default: "0.0"
+    t.decimal "total_price", precision: 20, scale: 10, default: "0.0"
+    t.integer "category", limit: 1
+    t.integer "status", limit: 1
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["balance_interval_id"], name: "index_order_smarts_on_balance_interval_id"
   end
 
   create_table "orders", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -149,9 +178,12 @@ ActiveRecord::Schema.define(version: 2019_07_02_114929) do
   add_foreign_key "accounts", "users"
   add_foreign_key "balance_intervals", "balances"
   add_foreign_key "balance_intervals", "trade_symbols"
+  add_foreign_key "balance_smarts", "balances"
+  add_foreign_key "balance_smarts", "trade_symbols"
   add_foreign_key "balances", "accounts"
   add_foreign_key "balances", "users"
   add_foreign_key "order_intervals", "balance_intervals"
+  add_foreign_key "order_smarts", "balance_intervals"
   add_foreign_key "orders", "accounts"
   add_foreign_key "orders", "trade_symbols"
   add_foreign_key "orders", "users"
