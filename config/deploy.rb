@@ -67,9 +67,9 @@ task :deploy do
     # Put things that will set up an empty directory into a fully set-up
     # instance of your project.
     invoke :'git:clone'
+    invoke :'deploy:link_shared_paths'
     # 停止 sidekiq
     invoke :'sidekiq:quiet'
-    invoke :'deploy:link_shared_paths'
     invoke :'bundle:install'
     # invoke :'rails:db_create'
     invoke :'rails:db_migrate'
@@ -94,6 +94,6 @@ end
 # For help in making your deploy script, see the Mina documentation:
 #
 #  - https://github.com/mina-deploy/mina/tree/master/docs
-# mina 'rake[samples:admins]' on=production
+# mina 'rake[samples:all]' on=production
 # mina 'rake[jobs:first_init]' on=production
 # mina sidekiq:restart
