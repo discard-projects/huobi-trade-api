@@ -73,7 +73,7 @@ class Order < ApplicationRecord
           Order.create(hid: o['hid'], user_id: account.user_id, account: account, trade_symbol: trade_symbol, category: side == 'buy' ? 'category_buy' : 'category_sell', price: price, amount: amount, kind: kind)
         else
           user.slack_notifier&.ping "[`error`] create #{trade_symbol.symbol} order error: #{res}", {icon_emoji: ':point_right:', mrkdwn: true} rescue nil
-          raise "create #{trade_symbol.symbol} order error."
+          raise "create #{trade_symbol.symbol} order error: #{res}"
         end
       end
     end
