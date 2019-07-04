@@ -20,6 +20,7 @@ set :repository, 'git@gitee.com:huobigroup/huobi-auto-trade.git'
 set :branch, 'master'
 
 set :sidekiq_pid, "#{fetch(:shared_path)}/tmp/pids/sidekiq.pid"
+set :sidekiq_processes, 2
 set :sidekiq_config, "#{fetch(:shared_path)}/config/sidekiq.yml"
 
 # Optional settings:
