@@ -18,6 +18,6 @@ class BalancesJob < ApplicationJob
         end
       end
     end
-    BalancesJob.set(wait: 10.second).perform_later()
+    BalancesJob.set(wait: 1.second).perform_later()
   end
 end
