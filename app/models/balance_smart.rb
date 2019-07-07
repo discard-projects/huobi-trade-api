@@ -50,6 +50,11 @@ class BalanceSmart < ApplicationRecord
   end
 
   def can_make_sell_order?
+    last_buy_trading = self.order_smarts.category_buy.where(status: [:status_created, :status_trading]).last
+    current_price = trade_symbol.current_price
+
+    # 如果最后下单的价格上升了1%的价格还比 比当前价格大, 就暂且不允许卖出，防止频繁下单买入卖出并取消
+    return false if last_buy_trading && last_buy_trading.price * (1 + 0.01) > current_price
     self.order_smarts.category_buy.where(status: [:status_traded]).present? && self.order_smarts.category_sell.where(status: [:status_created, :status_trading, :status_traded]).blank?
   end
 end
