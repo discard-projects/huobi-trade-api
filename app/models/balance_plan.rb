@@ -1,10 +1,14 @@
 class BalancePlan < ApplicationRecord
   belongs_to :balance
   belongs_to :trade_symbol
-  has_many :order_plans
+  has_many :order_plans, dependent: :destroy
 
   def user
     balance.user
+  end
+
+  def init_should_buy_traded_size
+    (self.open_price..self.end_price).step(self.interval_price).size
   end
 
   def next_should_buy_price

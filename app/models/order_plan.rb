@@ -49,8 +49,9 @@ class OrderPlan < ApplicationRecord
   def after_status_trading
     # make order
     side = category == 'category_buy' ? 'buy' : 'sell'
+    price = category == 'category_buy' ? should_buy_price : sell_price
     amount = category == 'category_buy' ? buy_amount : sell_amount
-    order = Order.api_make!(balance_plan.balance.account, balance_plan.trade_symbol, side, self.should_buy_price , amount, 'kind_smart')
+    order = Order.api_make!(balance_plan.balance.account, balance_plan.trade_symbol, side, price , amount, 'kind_plan')
     if order
       order.update(tradable: self, balancable: balance_plan)
     else

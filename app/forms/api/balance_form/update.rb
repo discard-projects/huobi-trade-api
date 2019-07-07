@@ -51,5 +51,32 @@ module Api::BalanceForm
         end
       end
     end
+
+    collection :balance_plans, populate_if_empty: BalancePlan do
+      property :balance_id
+      property :trade_symbol_id
+      property :begin_price
+      property :end_price
+      property :interval_price
+      property :open_price
+      property :amount
+      property :addition_amount
+      property :enabled
+
+      validates :balance_id, :trade_symbol_id, presence: true
+      validates :begin_price, :end_price, :interval_price, :open_price, :amount, numericality: { greater_than: 0 }
+
+      validate :valid_values
+      def valid_values
+        if self.enabled
+          if self.id.blank?
+            trade_symbol = TradeSymbol.find_by(id: self.trade_symbol_id)
+            errors.add(:open_price, "open_price[#{self.open_price}] 价格必须小于等于当前值 #{trade_symbol.current_price}") if self.open_price.to_f > trade_symbol.current_price
+          end
+          errors.add(:begin_price, "begin_price 价格必须小于等于 open_price #{self.open_price}") if self.begin_price.to_f > self.open_price.to_f
+          errors.add(:end_price, "end_price 价格必须大于等于 open_price #{self.open_price}") if self.open_price.to_f >= self.end_price.to_f
+        end
+      end
+    end
   end
 end

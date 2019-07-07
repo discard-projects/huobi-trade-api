@@ -9,6 +9,11 @@ json.items @balances do |balance|
     json.trade_symbol balance_interval.trade_symbol
   end
 
+  json.balance_plans balance.balance_plans do |balance_plan|
+    json.balance_plan balance_plan
+    json.trade_symbol balance_plan.trade_symbol
+  end
+
   json.balance_smarts balance.balance_smarts do |balance_smart|
     json.balance_smart balance_smart
     json.trade_symbol balance_smart.trade_symbol
@@ -18,29 +23,12 @@ json.items @balances do |balance|
     json.固定值交易  balance.balance_intervals do |balance_interval|
       json.(balance_interval, :buy_price, :sell_price, :amount, :enabled)
     end
-    json.计划交易 []
+    json.计划交易  balance.balance_plans do |balance_plan|
+      json.(balance_plan, :open_price, :interval_price, :amount, :addition_amount, :enabled)
+    end
     json.智能交易 balance.balance_smarts do |balance_smart|
       json.(balance_smart, :amount, :open_price, :enabled, :resolve_amount, :next_should_buy_price, :next_should_buy_amount, :avg_price, :sell_percent, :should_sell_price, :should_sell_amount)
       json.calc_should_sell_price "#{balance_smart.should_sell_price} = #{balance_smart.avg_price} + #{balance_smart.avg_price * balance_smart.sell_percent * 0.01}"
     end
-    # json.计划交易  balance.balance_plans do |balance_plan|
-    #   json.(balance_plan, :range_begin_price, :interval_price, :count, :enabled)
-    # end
-    # json.智能交易  balance.balance_smarts do |balance_smart|
-    #   json.(balance_smart, :sell_percent, :enabled)
-    #   json.sell_percent "#{balance_smart.sell_percent}%"
-    #   buyed_count = balance_smart.order_smarts.category_buy.where(status: [:status_traded]).sum(:count)
-    #   last_price = balance_smart.order_smarts.category_buy.where(status: [:status_traded]).last.price rescue nil
-    #   next_price = last_price - balance_smart.interval_price rescue nil
-    #   avg_price = balance_smart.avg_price
-    #   json.buyed_count buyed_count
-    #   json.next_buy_percent "#{(balance_smart.interval_price / last_price * 100).floor(2)}%" rescue nil
-    #   json.next_buy_price "#{next_price} = #{last_price} - #{balance_smart.interval_price}" rescue nil
-    #   json.avg_price avg_price rescue nil
-    #   json.calc_sell_price "#{balance_smart.sell_price} = #{avg_price} + #{avg_price * (balance_smart.sell_percent / 100)}" rescue nil
-    #   mao_price = (avg_price * balance_smart.sell_percent * 0.01) * balance_smart.order_smarts.category_buy.status_traded.sum(:count) rescue nil
-    #   fees_price = balance_smart.order_smarts.category_buy.status_traded.sum(:total_price) * 0.005 rescue nil
-    #   json.profit "约#{balance_smart.trade_symbol.base_currency}:#{(mao_price-fees_price).floor(10)}=#{mao_price.floor(10)}-#{fees_price.floor(10)}" rescue nil
-    # end
   end
 end
