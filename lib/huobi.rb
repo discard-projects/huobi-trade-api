@@ -234,12 +234,12 @@ class Huobi
   end
 end
 
-access_key = 'vqgdf4gsga-aed5e526-7efce3b7-60407'
-secret_key = '38939ebe-6a886198-cecaa157-43fea'
+# access_key = 'vqgdf4gsga-aed5e526-7efce3b7-60407'
+# secret_key = '38939ebe-6a886198-cecaa157-43fea'
 # account_id = '6125085'
-huobi = Huobi.new(access_key, secret_key)
+# huobi = Huobi.new(access_key, secret_key)
 # huobi = Huobi.new
-p huobi.accounts
+# p huobi.accounts
 # p huobi.balances 6125085
 # p huobi.symbols
 # p huobi.depth('ethbtc')
