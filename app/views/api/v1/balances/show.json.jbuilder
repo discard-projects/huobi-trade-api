@@ -10,7 +10,7 @@ json.item do
   end
 
   json.balance_plans @balance.balance_plans do |balance_plan|
-    json.(balance_plan, :id, :balance_id, :trade_symbol_id, :begin_price, :end_price, :interval_price, :open_price, :amount, :enabled, :addition_amount,  :created_time, :updated_time)
+    json.(balance_plan, :id, :init_should_buy_traded_size, :balance_id, :trade_symbol_id, :begin_price, :end_price, :interval_price, :open_price, :amount, :enabled, :addition_amount,  :created_time, :updated_time)
     json.trade_symbol do
       json.(balance_plan.trade_symbol, :id, :base_currency, :quote_currency)
     end
