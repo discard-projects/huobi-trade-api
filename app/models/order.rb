@@ -85,6 +85,10 @@ class Order < ApplicationRecord
     if self.tradable&.may_status_traded?
       self.tradable.status_traded!
     end
+    # app下单直接发送通知，其他通知由tradable对象处理
+    if self.kind == 'kind_app'
+      self.send_traded_notification rescue nil
+    end
   end
 
   def after_status_canceled
