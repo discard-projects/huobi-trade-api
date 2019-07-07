@@ -41,7 +41,8 @@ class BalanceSmart < ApplicationRecord
   end
 
   def should_sell_price
-    (self.avg_price * (1 + self.sell_percent * 0.01)).floor(trade_symbol.price_precision)
+    # 向上取，一个点就为超过1%的情况
+    (self.avg_price * (1 + self.sell_percent * 0.01)).ceil(trade_symbol.price_precision)
   end
 
   def should_sell_amount
