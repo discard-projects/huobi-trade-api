@@ -45,6 +45,49 @@ class BalancesJob < ApplicationJob
         end
       end
     end
+    # balance_plans
+    BalancePlan.where(enabled: true).each do |balance_plan|
+      balance_plan.with_lock do
+        user = balance_plan.user
+        huobi_api = user.huobi_api
+        if huobi_api
+          # 以当前open_price购买比当前价格高的order_plan节点
+          if balance_plan.order_plans.blank?
+            self.balance_plan_buy_top_price_with_open_price balance_plan rescue nil
+          else
+            # 判断当前价格是否需要买入
+            next_should_buy_price = balance_plan.next_should_buy_price
+            next_should_buy_amount = balance_plan.next_should_buy_amount
+
+            # 尝试将比next_should_buy_price小的正在交易的订单取消掉
+            balance_plan.order_plans.status_buyed.where(status: [:status_created, :status_trading]).where('buy_price < ?', next_should_buy_price).each do |buying_order_plan|
+              buying_order_plan.try_cancel!
+            end
+            if balance_plan.order_plans.status_buyed.where(status: [:status_created, :status_trading, :status_traded]).where('buy_price <= ?', next_should_buy_price).blank?
+              order_plan = balance_plan.order_plans.create(buy_price: next_should_buy_price, should_buy_price: next_should_buy_price, buy_amount: next_should_buy_amount, sell_price: next_should_buy_price + balance_plan.interval_price, category: 'category_buy')
+              if order_plan.may_status_trading?
+                order_plan.status_trading!
+              end
+            end
+          end
+        end
+      end
+    end
     BalancesJob.set(wait: 1.second).perform_later()
+  end
+
+
+  def balance_plan_buy_top_price_with_open_price balance_plan
+    trade_symbol = balance_plan.trade_symbol
+    (balance_plan.open_price..balance_plan.end_price).step(balance_plan.interval_price).each do |virtual_buy_price|
+      calc_should_buy_price = [trade_symbol.current_price, balance_plan.open_price].min.floor(trade_symbol.price_precision)
+      calc_should_sell_price = virtual_buy_price + balance_plan.interval_price
+      calc_should_buy_amount = (balance_plan.amount - (calc_should_buy_price - balance_plan.open_price) / balance_plan.interval_price * balance_plan.addition_amount).floor(trade_symbol.amount_precision)
+
+      order_plan = balance_plan.order_plans.create(buy_price: virtual_buy_price, should_buy_price: calc_should_buy_price, buy_amount: calc_should_buy_amount, sell_price: calc_should_sell_price, category: 'category_buy')
+      if order_plan.may_status_trading?
+        order_plan.status_trading!
+      end
+    end
   end
 end

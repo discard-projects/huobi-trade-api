@@ -60,7 +60,7 @@ class OrderSmart < ApplicationRecord
     if order
       order.update(tradable: self, balancable: balance_smart)
     else
-      raise "#{balance_smart.trade_symbol.base_currency}[amount:#{balance_smart.amount}] make #{side} order error. will try."
+      raise "smart: #{balance_smart.trade_symbol.base_currency}[amount:#{balance_smart.amount}] make #{side} order error. will try."
     end
   end
 

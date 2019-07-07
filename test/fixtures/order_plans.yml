@@ -1,0 +1,11 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  balance_plan: one
+  price: 9.99
+  amount: 9.99
+
+two:
+  balance_plan: two
+  price: 9.99
+  amount: 9.99
