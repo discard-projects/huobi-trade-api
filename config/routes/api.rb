@@ -22,13 +22,12 @@ defaults format: :json do
           resources :footprints, only: [:index]
         end
 
-        # resources :balance_plans, only: [:index, :destroy]
+        resources :balance_plans, only: [:index, :destroy]
+        resources :order_plans, only: [:index, :show], model_name: 'OrderPlan' do
+          resources :footprints, only: [:index]
+        end
+
         resources :balance_smarts, only: [:index, :destroy]
-        #
-        # resources :order_plans, only: [:index, :show], model_name: 'OrderPlan' do
-        #   resources :footprints, only: [:index]
-        # end
-        #
         resources :order_smarts, only: [:index, :show], model_name: 'OrderSmart' do
           resources :footprints, only: [:index]
         end

@@ -1,0 +1,21 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  balance: one
+  trade_symbol: one
+  begin_price: 9.99
+  end_price: 9.99
+  interval_price: 9.99
+  open_price: 9.99
+  amount: 
+  enabled: false
+
+two:
+  balance: two
+  trade_symbol: two
+  begin_price: 9.99
+  end_price: 9.99
+  interval_price: 9.99
+  open_price: 9.99
+  amount: 
+  enabled: false
