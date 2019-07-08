@@ -140,7 +140,7 @@ class Huobi
   end
 
   ## 查询所有订单
-  def orders(symbol, size = 60)
+  def orders(symbol, size = 40)
     params = {
         "symbol" => symbol,
         "states" => "submitted,partial-filled,partial-canceled,filled,canceled",
