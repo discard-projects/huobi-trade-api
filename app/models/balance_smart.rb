@@ -28,7 +28,8 @@ class BalanceSmart < ApplicationRecord
 
   def can_make_buy_order?
     current_price = trade_symbol.current_price
-    !has_max_amount? && current_price <= self.next_should_buy_price && self.order_smarts.category_buy.where(status: [:status_created, :status_trading]).blank? || self.order_smarts.category_buy.where.not(status: 'status_canceled').blank?
+    # 没买到最大量     并  # 价格 <= 应该买入价格的1.005                         并 # 没有正在交易的买单                                                                       或 # 买入订单为非取消状态个数为0
+    !has_max_amount? && current_price <= self.next_should_buy_price * 1.005 && self.order_smarts.category_buy.where(status: [:status_created, :status_trading]).blank? || self.order_smarts.category_buy.where.not(status: 'status_canceled').blank?
   end
   # 所有买入平均值
   def avg_price

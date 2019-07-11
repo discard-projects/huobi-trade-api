@@ -38,6 +38,9 @@ module Api::BalanceForm
 
       validates :balance_id, :trade_symbol_id, presence: true
 
+      validates :buy_percent, numericality: { greater_than_or_equal_to: 2 }
+      validates :sell_percent, numericality: { greater_than_or_equal_to: 0.5 }
+
       validate :valid_values
 
       def valid_values
