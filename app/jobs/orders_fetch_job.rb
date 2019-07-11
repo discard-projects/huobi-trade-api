@@ -7,10 +7,10 @@ class OrdersFetchJob < ApplicationJob
       next unless user.trade_enabled
 
       TradeSymbol.where(enabled: true).find_each do |trade_symbol|
-        OrdersUserTradeSymbolFetchJob.perform_later(user.id, trade_symbol.id)
-        # if trade_symbol.users.include? user
-        #   # 创建job获取 用户对应 trade_symbol的订单
-        # end
+        if trade_symbol.users.include? user
+          # 创建job获取 用户对应 trade_symbol的订单
+          OrdersUserTradeSymbolFetchJob.perform_later(user.id, trade_symbol.id)
+        end
       end
     end
     OrdersFetchJob.set(wait: 1.second).perform_later()

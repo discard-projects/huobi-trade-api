@@ -16,7 +16,7 @@ class TradeSymbol < ApplicationRecord
   end
 
   def users
-    User.joins(:balance_intervals).where('balance_intervals.trade_symbol_id = ?', self.id).uniq# | User.joins(:balance_trade_symbols).where('balance_trade_symbols.trade_symbol_id = ?', self.id).uniq | User.joins(:balance_smarts).where('balance_smarts.trade_symbol_id = ?', self.id).uniq
+    User.joins(:balance_intervals).where('balance_intervals.trade_symbol_id = ?', self.id).uniq | User.joins(:balance_smarts).where('balance_smarts.trade_symbol_id = ?', self.id).uniq | User.joins(:balance_plans).where('balance_plans.trade_symbol_id = ?', self.id).uniq
   end
 
   def update_market_detail
