@@ -1,6 +1,7 @@
 class OrderInterval < ApplicationRecord
   include AASM
   has_ancestry
+  has_footprints
 
   belongs_to :balance_interval
   has_one :order, as: :tradable, dependent: :nullify
