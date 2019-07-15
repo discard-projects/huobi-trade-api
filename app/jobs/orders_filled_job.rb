@@ -2,7 +2,7 @@ class OrdersFilledJob < ApplicationJob
   queue_as :default
 
   def perform(*args)
-    Order.status_created.where('created_at < ?', Time.now - 24.hours).where.not(hid: nil).group(:trade_symbol_id).select(:trade_symbol_id).each do |o|
+    Order.status_created.where('created_at < ?', Time.now - 24.hours).where.not(hid: nil).group(:trade_symbol_id, :user_id).select(:trade_symbol_id, :user_id).each do |o|
       user = o.user
       trade_symbol = o.trade_symbol
       huobi_api = user.huobi_api
