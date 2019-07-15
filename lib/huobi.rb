@@ -174,7 +174,7 @@ class Huobi
   ## 查询当前成交、历史成交
   def history_matchresults(symbol)
     params = {"symbol" => symbol}
-    request("GET", "/v1/order/matchresults", params, false)
+    request("GET", "/v1/order/matchresults", params, true)
   end
 
   ## 现货账户划入至借贷账户
