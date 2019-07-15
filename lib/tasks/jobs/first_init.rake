@@ -10,6 +10,8 @@ namespace :jobs do
     BalancesFetchJob.perform_later()
     # 10s一次
     OrdersFetchJob.perform_later()
+    # 35 minutes one time
+    OrdersFilledJob.perform_later()
 
     BalancesJob.perform_later()
 
