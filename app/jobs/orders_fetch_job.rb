@@ -12,6 +12,12 @@ class OrdersFetchJob < ApplicationJob
           OrdersUserTradeSymbolFetchJob.perform_later(user.id, trade_symbol.id)
         end
       end
+      user.orders.where(status: [:status_created, :status_trading]).where('created_at < ?', Time.now - 24.hours).group(:trade_symbol_id).select(:trade_symbol_id).each do |o|
+        order = user.orders.where(trade_symbol_id: o.trade_symbol_id).first
+        if order.present?
+          OrdersUserTradeSymbolFetchJob.perform_later(user.id, o.trade_symbol_id, order.hid)
+        end
+      end
     end
     OrdersFetchJob.set(wait: 1.second).perform_later()
   end

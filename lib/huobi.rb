@@ -149,6 +149,18 @@ class Huobi
     request("GET", "/v1/order/orders", params)
   end
 
+  ## 查询之前所有订单
+  def pre_orders(symbol, from, direct = 'next', size = 40)
+    params = {
+        "symbol" => symbol,
+        "from" => from,
+        "states" => "submitted,partial-filled,partial-canceled,filled,canceled",
+        "direct" => direct,
+        "size" => size
+    }
+    request("GET", "/v1/order/orders", params)
+  end
+
   ## 查询当前委托、历史委托
   def open_orders(symbol, side)
     params = {
