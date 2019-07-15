@@ -140,12 +140,15 @@ class Huobi
   end
 
   ## 查询所有订单
-  def orders(symbol, size = 40)
+  def orders(symbol, start_date = nil, size = 40)
     params = {
         "symbol" => symbol,
         "states" => "submitted,partial-filled,partial-canceled,filled,canceled",
         "size" => size
     }
+    if start_date
+      params.merge!({"start-date" => start_date})
+    end
     request("GET", "/v1/order/orders", params)
   end
 
