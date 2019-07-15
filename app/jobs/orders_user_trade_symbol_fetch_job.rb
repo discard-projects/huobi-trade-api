@@ -1,7 +1,7 @@
 class OrdersUserTradeSymbolFetchJob < ApplicationJob
   queue_as :default
 
-  def perform(user_id, trade_symbol_id, last_hid)
+  def perform(user_id, trade_symbol_id, last_hid = nil)
     # Do something later
     user = User.find_by(id: user_id)
     trade_symbol = TradeSymbol.find_by(id: trade_symbol_id)
