@@ -50,7 +50,7 @@ class OrdersUserTradeSymbolFetchJob < ApplicationJob
           order.with_lock do
             # "订单状态	: submitting , submitted 已提交, partial-filled 部分成交, partial-canceled 部分成交撤销, filled 完全成交, canceled 已撤销"
             if order.hstate == 'filled' && order.may_status_filled?
-              order.status_filled!
+              order.status_filled! rescue nil
             elsif order.hstate == 'partial-filled' && order.may_status_partial_filled?
               order.status_partial_filled!
             elsif order.hstate =~ /canceled/i && order.may_status_canceled?
