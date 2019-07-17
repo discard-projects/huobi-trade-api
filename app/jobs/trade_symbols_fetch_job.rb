@@ -19,6 +19,6 @@ class TradeSymbolsFetchJob < ApplicationJob
         end
       end
     end
-    TradeSymbolsFetchJob.set(wait: 15.minute).perform_later()
+    TradeSymbolsFetchJob.set(wait: 7.minute).perform_later()
   end
 end
