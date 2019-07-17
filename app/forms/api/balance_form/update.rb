@@ -9,9 +9,11 @@ module Api::BalanceForm
       property :sell_price
       property :amount
       property :enabled
+      property :custom_sell_enabled
 
       validates :balance_id, :trade_symbol_id, presence: true
-      validates :buy_price, :sell_price, :amount, numericality: { greater_than: 0 }
+      validates :buy_price, :amount, numericality: { greater_than: 0 }
+      validates :sell_price, numericality: { greater_than: 0 }, if: -> { !self.custom_sell_enabled }
       # validates :cus_buy_price, :cus_sell_price, :cus_count, numericality: { greater_than_or_equal_to: 0 }
 
       validate :valid_values
@@ -19,7 +21,7 @@ module Api::BalanceForm
         if self.enabled && self.id.blank?
           trade_symbol = TradeSymbol.find_by(id: self.trade_symbol_id)
           errors.add(:buy_price, "价格必须小于等于当前值 #{trade_symbol.current_price}") if self.buy_price.to_f > trade_symbol.current_price
-          errors.add(:sell_price, "价格必须大于购买值 #{self.buy_price}") if self.buy_price.to_f >= self.sell_price.to_f
+          errors.add(:sell_price, "价格必须大于购买值 #{self.buy_price}") if self.buy_price.to_f >= self.sell_price.to_f && !self.custom_sell_enabled
         end
       end
     end

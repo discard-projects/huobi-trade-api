@@ -46,11 +46,16 @@ class OrderInterval < ApplicationRecord
   def after_status_traded
     # 如果是买入成功，需要下单卖出
     if self.category == 'category_buy'
-      sell_amount = self.order.resolve_amount
-      sell_order_interval = balance_interval.order_intervals.create(price: balance_interval.sell_price, amount: sell_amount, category: 'category_sell')
-      if sell_order_interval.may_status_trading?
-        sell_order_interval.status_trading!
-        self.update(parent: sell_order_interval)
+      # 如果是手动卖出
+      if self.balance_interval.custom_sell_enabled
+        self.balance_interval.update(enabled: false )
+      else # 如果不是手动卖出
+        sell_amount = self.order.resolve_amount
+        sell_order_interval = balance_interval.order_intervals.create(price: balance_interval.sell_price, amount: sell_amount, category: 'category_sell')
+        if sell_order_interval.may_status_trading?
+          sell_order_interval.status_trading!
+          self.update(parent: sell_order_interval)
+        end
       end
     # 如果是卖出需要计算利润
     else # category_sell

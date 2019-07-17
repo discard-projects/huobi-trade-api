@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_07_07_071056) do
+ActiveRecord::Schema.define(version: 2019_07_17_094412) do
 
   create_table "accounts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "user_id", null: false
@@ -32,6 +32,7 @@ ActiveRecord::Schema.define(version: 2019_07_07_071056) do
     t.boolean "enabled", default: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.boolean "custom_sell_enabled", default: false, comment: "是否手动卖出"
     t.index ["balance_id"], name: "index_balance_intervals_on_balance_id"
     t.index ["trade_symbol_id"], name: "index_balance_intervals_on_trade_symbol_id"
   end
