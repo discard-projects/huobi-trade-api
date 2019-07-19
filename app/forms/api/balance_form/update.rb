@@ -21,8 +21,8 @@ module Api::BalanceForm
         if self.enabled && self.id.blank?
           trade_symbol = TradeSymbol.find_by(id: self.trade_symbol_id)
           errors.add(:buy_price, "价格必须小于等于当前值 #{trade_symbol.current_price}") if self.buy_price.to_f > trade_symbol.current_price
-          errors.add(:sell_price, "价格必须大于购买值 #{self.buy_price}") if self.buy_price.to_f >= self.sell_price.to_f && !self.custom_sell_enabled
         end
+        errors.add(:sell_price, "价格必须大于购买值 #{self.buy_price}") if !self.custom_sell_enabled && self.buy_price.to_f >= self.sell_price.to_f
       end
     end
 
