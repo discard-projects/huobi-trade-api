@@ -35,7 +35,7 @@ class OrderInterval < ApplicationRecord
   def after_status_trading
     # make order
     side = category == 'category_buy' ? 'buy' : 'sell'
-    order = Order.api_make!(balance_interval.balance.account, balance_interval.trade_symbol, side, price, amount, 'kind_interval')
+    order = Order.api_make!(balance_interval.balance.account, balance_interval.trade_symbol, side, self.price, self.amount, 'kind_interval')
     if order
       order.update(tradable: self, balancable: balance_interval)
     else
