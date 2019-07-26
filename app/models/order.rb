@@ -71,7 +71,9 @@ class Order < ApplicationRecord
         if o
           Order.create(hid: o['hid'], user_id: account.user_id, account: account, trade_symbol: trade_symbol, category: side == 'buy' ? 'category_buy' : 'category_sell', price: price, amount: amount, kind: kind)
         else
-          user.slack_notifier&.ping "[`error`] create #{trade_symbol.symbol} order error: #{res}", {icon_emoji: ':point_right:', mrkdwn: true} rescue nil
+          Rails.cache.fetch("OrderApiMakeError:user:#{user.id}", expires_in: 10.seconds) do
+            user.slack_notifier&.ping "[`error`] create #{trade_symbol.symbol} order error: #{res}", {icon_emoji: ':point_right:', mrkdwn: true} rescue nil
+          end
           raise "create #{trade_symbol.symbol} order error: #{res}"
         end
       end

@@ -12,7 +12,7 @@ class BalanceIntervalsEachJob < ApplicationJob
         if huobi_api
           # buy_price = [trade_symbol.current_price, balance_interval.buy_price].min.floor(trade_symbol.price_precision)
           buy_price = balance_interval.buy_price.floor(trade_symbol.price_precision)
-          order_interval = balance_interval.order_intervals.create(price: buy_price, amount: balance_interval.amount, category: 'category_buy')
+          order_interval = OrderInterval.create(balance_interval: balance_interval, price: buy_price, amount: balance_interval.amount, category: 'category_buy')
           if order_interval.may_status_trading?
             order_interval.status_trading! rescue nil
           end
