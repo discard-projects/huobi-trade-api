@@ -41,12 +41,20 @@ class Order < ApplicationRecord
     (self.field_amount - self.field_fees).floor(trade_symbol.price_precision)
   end
 
+  def field_profit_to_usdt
+    usdt_count = self.field_profit
+    if trade_symbol.quote_currency != 'usdt'
+      usdt_count = TradeSymbol.find_by(symbol: "#{trade_symbol.quote_currency}usdt").current_price * usdt_count
+    end
+    usdt_count.round(2)
+  end
+
   def send_traded_notification
     message = [
       "主题: `#{self.kind} #{self.category == 'category_sell' ? '卖出' : '买入'}#{trade_symbol.base_currency}` [#{self.id}], 价格: #{self.price}, 数量: #{self.amount}, 约合: #{trade_symbol.quote_currency} #{self.field_amount * self.price}",
     ]
     if category == 'category_sell' && self.field_profit != 0
-      message.push("本次盈利: `#{trade_symbol.quote_currency} #{self.field_profit}`")
+      message.push("本次盈利: `usdt #{self.field_profit_to_usdt}`")
     end
     message.push "时间: #{self.hfinish_at.try(:strftime, '%Y-%m-%d %H:%M:%S')}"
     message.push "邮箱: #{self.user.email}"
