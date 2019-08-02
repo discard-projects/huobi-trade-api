@@ -19,14 +19,22 @@ class TradeSymbolHistory < ApplicationRecord
       if trade_symbol.trade_symbol_histories.between_range_column(:created_at, Time.current - 3.minute, Time.current).where('moment_rate >= ?', addition_rate).present? && trade_symbol.trade_symbol_histories.between_range_column(:created_at, Time.current - 3.minute, Time.current).where('moment_rate <= ?', addition_rate * -1).present?
         last_history = trade_symbol.trade_symbol_histories.where('moment_rate >= ?', addition_rate).last
         User.find_each do |user|
-          user.slack_notifier&.ping "大行情 ⤴️ [`#{last_history.trade_symbol.symbol}`], from: #{last_history.previous_close}, to: #{last_history.close}, 增长率: `#{last_history.moment_rate * 100}%`", {icon_emoji: ':point_right:', mrkdwn: true} rescue nil
+          message = [
+            "大行情: `⤴️️ [`#{last_history.trade_symbol.symbol}`][`#{last_history.moment_rate * 100}%`], `#{last_history.previous_close}` -> `#{last_history.close}`",
+          ]
+          message.push "时间: #{self.hfinish_at.try(:strftime, '%Y-%m-%d %H:%M:%S')}"
+          user.slack_notifier&.ping message.join("\n\n"), {icon_emoji: ':point_right:', mrkdwn: true} rescue nil
         end if last_history
       end
     elsif self.moment_rate <= addition_rate * -1
       if trade_symbol.trade_symbol_histories.between_range_column(:created_at, Time.current - 3.minute, Time.current).where('moment_rate >= ?', addition_rate).present? && trade_symbol.trade_symbol_histories.between_range_column(:created_at, Time.current - 3.minute, Time.current).where('moment_rate <= ?', addition_rate * -1).present?
         last_history = trade_symbol.trade_symbol_histories.where('moment_rate <= ?', addition_rate * -1).last
         User.find_each do |user|
-          user.slack_notifier&.ping "大行情 ⤵️️ [`#{last_history.trade_symbol.symbol}`][`#{last_history.moment_rate * 100}%`], `#{last_history.previous_close}` -> `#{last_history.close}`", {icon_emoji: ':point_right:', mrkdwn: true} rescue nil
+          message = [
+            "大行情: `⤵️️ [`#{last_history.trade_symbol.symbol}`][`#{last_history.moment_rate * 100}%`], `#{last_history.previous_close}` -> `#{last_history.close}`",
+          ]
+          message.push "时间: #{self.hfinish_at.try(:strftime, '%Y-%m-%d %H:%M:%S')}"
+          user.slack_notifier&.ping message.join("\n\n"), {icon_emoji: ':point_right:', mrkdwn: true} rescue nil
         end if last_history
       end
     end
