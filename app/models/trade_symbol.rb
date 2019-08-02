@@ -38,7 +38,7 @@ class TradeSymbol < ApplicationRecord
 
   def after_commit
     if previous_changes.key?(:close)
-      TradeSymbolHistory.create(trade_symbol: self, amount: self.amount, count: self.count, open: self.open, close: self.close, high: self.high, low: self.low, previous_close: self.close_was || 0)
+      TradeSymbolHistory.create(trade_symbol: self, amount: self.amount, count: self.count, open: self.open, close: self.close, high: self.high, low: self.low, previous_close: previous_changes[:close].first || 0)
     end
   end
 end
