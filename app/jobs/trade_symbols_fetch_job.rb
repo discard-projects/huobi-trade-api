@@ -21,7 +21,7 @@ class TradeSymbolsFetchJob < ApplicationJob
     end
 
     # 删除之前的history
-    TradeSymbolHistory.where('created_at <', Time.now - 10.minutes).destroy_all
+    TradeSymbolHistory.where('created_at <', Time.now - 10.minutes).delete_all
 
     TradeSymbolsFetchJob.set(wait: 7.minute).perform_later()
   end

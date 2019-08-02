@@ -9,7 +9,7 @@ class TradeSymbolHistory < ApplicationRecord
 
   def before_save
     pre_price = self.previous_close.to_f
-    self.moment_rate = ((self.close - pre_price) / pre_price).round(2) rescue 0
+    self.moment_rate = ((self.close - pre_price) / pre_price).round(3) rescue 0
   end
 
   def after_commit
