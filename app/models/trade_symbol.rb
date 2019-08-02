@@ -24,6 +24,10 @@ class TradeSymbol < ApplicationRecord
     if data && data['status'] == 'ok'
       tick = data['tick']
       self.update(amount: tick['amount'], count: tick['count'], open: tick['open'], close: tick['close'], high: tick['high'], low: tick['low'])
+    else
+      Rails.cache.fetch("TradeSymbolApiGetPrice:#{self.id}", expires_in: 10.minutes) do
+        $slack_bug_notifier&.ping "[`error`] fetch trade_symbol price: #{res}", {icon_emoji: ':point_right:', mrkdwn: true} rescue nil
+      end
     end
   end
 end
