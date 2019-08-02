@@ -8,15 +8,16 @@ class TradeSymbolHistory < ApplicationRecord
   private
 
   def before_save
-    self.moment_rate = (self.previous_close.to_f / self.close).round(2)
+    pre_price = self.previous_close.to_f
+    self.moment_rate = ((self.close - pre_price) / pre_price).round(2) rescue 0
   end
 
   def after_commit
     if trade_symbol.trade_symbol_histories.between_range_column(:created_at, Time.current - 1.minute, Time.current).where('moment_rate >= ?', 0.01).present? && trade_symbol.trade_symbol_histories.between_range_column(:created_at, Time.current - 1.minute, Time.current).where('moment_rate <= ?', 0.01).present?
       last_history = trade_symbol.trade_symbol_histories.where('moment_rate >= ?', 0.01).last
       User.find_each do |user|
-        user.slack_notifier&.ping "大行情[#{self.symbol}], from: #{last_history.previous_close}, to: #{last_history.close}", {icon_emoji: ':point_right:', mrkdwn: true} rescue nil
-      end
+        user.slack_notifier&.ping "大行情[#{last_history.trade_symbol.symbol}], from: #{last_history.previous_close}, to: #{last_history.close}, 增长率: #{last_history.moment_rate * 100}%", {icon_emoji: ':point_right:', mrkdwn: true} rescue nil
+      end if last_history
     end
   end
 end
