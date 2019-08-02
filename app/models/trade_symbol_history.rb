@@ -12,8 +12,8 @@ class TradeSymbolHistory < ApplicationRecord
   end
 
   def after_commit
-    if trade_symbol.trade_symbol_histories.where('moment_rate >= ?', 0.1).present? && trade_symbol.trade_symbol_histories.where('moment_rate <= ?', 0.1).present?
-      last_history = trade_symbol.trade_symbol_histories.where('moment_rate >= ?', 0.1).last
+    if trade_symbol.trade_symbol_histories.between_range_column(:created_at, Time.current - 1.minute, Time.current).where('moment_rate >= ?', 0.01).present? && trade_symbol.trade_symbol_histories.between_range_column(:created_at, Time.current - 1.minute, Time.current).where('moment_rate <= ?', 0.01).present?
+      last_history = trade_symbol.trade_symbol_histories.where('moment_rate >= ?', 0.01).last
       User.find_each do |user|
         user.slack_notifier&.ping "大行情[#{self.symbol}], from: #{last_history.previous_close}, to: #{last_history.close}", {icon_emoji: ':point_right:', mrkdwn: true} rescue nil
       end
