@@ -1,6 +1,9 @@
 class TradeSymbol < ApplicationRecord
 
   has_many :balance_intervals
+  has_many :trade_symbol_histories
+
+  after_commit :after_commit
 
   def current_price
     close || 0
@@ -28,6 +31,14 @@ class TradeSymbol < ApplicationRecord
       Rails.cache.fetch("TradeSymbolApiGetPrice:#{self.id}", expires_in: 10.minutes) do
         $slack_bug_notifier&.ping "[`error`] fetch trade_symbol #{self.symbol} price: #{data}", {icon_emoji: ':point_right:', mrkdwn: true} rescue nil
       end
+    end
+  end
+
+  private
+
+  def after_commit
+    if previous_changes.include?(:close)
+      TradeSymbolHistory.create(trade_symbol: self, amount: self.amount, count: self.count, open: self.open, close: self.close, high: self.high, low: self.low, previous_close: self.close_was || 0)
     end
   end
 end

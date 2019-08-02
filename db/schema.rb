@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_07_17_094412) do
+ActiveRecord::Schema.define(version: 2019_08_02_021232) do
 
   create_table "accounts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "user_id", null: false
@@ -159,6 +159,21 @@ ActiveRecord::Schema.define(version: 2019_07_17_094412) do
     t.index ["user_id"], name: "index_orders_on_user_id"
   end
 
+  create_table "trade_symbol_histories", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "trade_symbol_id", null: false
+    t.decimal "amount", precision: 20, scale: 10, comment: "24小时成交量"
+    t.decimal "count", precision: 20, scale: 10, comment: "24小时交易次数"
+    t.decimal "open", precision: 20, scale: 10, comment: "阶段开盘价"
+    t.decimal "close", precision: 20, scale: 10, comment: "阶段收盘价"
+    t.decimal "high", precision: 20, scale: 10, comment: "阶段最高价"
+    t.decimal "low", precision: 20, scale: 10, comment: "阶段最低价"
+    t.decimal "previous_close", precision: 20, scale: 10, comment: "阶段上一次收盘价"
+    t.decimal "moment_rate", precision: 10, scale: 2, comment: "比上一次增长比率"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["trade_symbol_id"], name: "index_trade_symbol_histories_on_trade_symbol_id"
+  end
+
   create_table "trade_symbols", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "base_currency"
     t.string "quote_currency"
@@ -223,4 +238,5 @@ ActiveRecord::Schema.define(version: 2019_07_17_094412) do
   add_foreign_key "orders", "accounts"
   add_foreign_key "orders", "trade_symbols"
   add_foreign_key "orders", "users"
+  add_foreign_key "trade_symbol_histories", "trade_symbols"
 end
