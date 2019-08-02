@@ -8,7 +8,7 @@ class TradeSymbolHistory < ApplicationRecord
   private
 
   def before_save
-
+    self.moment_rate = (self.previous_close.to_f / self.close).round(2)
   end
 
   def after_commit
