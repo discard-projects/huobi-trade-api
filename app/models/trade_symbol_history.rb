@@ -22,7 +22,7 @@ class TradeSymbolHistory < ApplicationRecord
           message = [
             "大行情: `⤴️️ [`#{last_history.trade_symbol.symbol}`][`#{last_history.moment_rate * 100}%`], `#{last_history.previous_close}` -> `#{last_history.close}`",
           ]
-          message.push "时间: #{self.hfinish_at.try(:strftime, '%Y-%m-%d %H:%M:%S')}"
+          message.push "时间: #{Time.current.strftime('%Y-%m-%d %H:%M:%S')}"
           user.slack_notifier&.ping message.join("\n\n"), {icon_emoji: ':point_right:', mrkdwn: true} rescue nil
         end if last_history
       end
@@ -33,7 +33,7 @@ class TradeSymbolHistory < ApplicationRecord
           message = [
             "大行情: `⤵️️ [`#{last_history.trade_symbol.symbol}`][`#{last_history.moment_rate * 100}%`], `#{last_history.previous_close}` -> `#{last_history.close}`",
           ]
-          message.push "时间: #{self.hfinish_at.try(:strftime, '%Y-%m-%d %H:%M:%S')}"
+          message.push "时间: #{Time.current.strftime('%Y-%m-%d %H:%M:%S')}"
           user.slack_notifier&.ping message.join("\n\n"), {icon_emoji: ':point_right:', mrkdwn: true} rescue nil
         end if last_history
       end
