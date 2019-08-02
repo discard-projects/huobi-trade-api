@@ -20,7 +20,7 @@ class TradeSymbolHistory < ApplicationRecord
         last_history = trade_symbol.trade_symbol_histories.where('moment_rate >= ?', addition_rate).last
         User.find_each do |user|
           message = [
-            "大行情: `⤴️️ [`#{last_history.trade_symbol.symbol}`][`#{last_history.moment_rate * 100}%`], `#{last_history.previous_close}` -> `#{last_history.close}`",
+            "大行情: ⤴️️ [`#{last_history.trade_symbol.symbol}`][`#{last_history.moment_rate * 100}%`], `#{last_history.previous_close} -> #{last_history.close}`",
           ]
           message.push "时间: #{Time.current.strftime('%Y-%m-%d %H:%M:%S')}"
           user.slack_notifier&.ping message.join("\n\n"), {icon_emoji: ':point_right:', mrkdwn: true} rescue nil
@@ -31,7 +31,7 @@ class TradeSymbolHistory < ApplicationRecord
         last_history = trade_symbol.trade_symbol_histories.where('moment_rate <= ?', addition_rate * -1).last
         User.find_each do |user|
           message = [
-            "大行情: `⤵️️ [`#{last_history.trade_symbol.symbol}`][`#{last_history.moment_rate * 100}%`], `#{last_history.previous_close}` -> `#{last_history.close}`",
+            "大行情: ⤵️️ [`#{last_history.trade_symbol.symbol}`][`#{last_history.moment_rate * 100}%`], `#{last_history.previous_close} -> #{last_history.close}`",
           ]
           message.push "时间: #{Time.current.strftime('%Y-%m-%d %H:%M:%S')}"
           user.slack_notifier&.ping message.join("\n\n"), {icon_emoji: ':point_right:', mrkdwn: true} rescue nil
