@@ -12,7 +12,7 @@ class CreateTradeSymbolHistories < ActiveRecord::Migration[6.0]
 
       t.decimal :previous_close, precision: 20, scale: 10, defaut: 0, comment: "阶段上一次收盘价"
 
-      t.decimal :moment_rate, precision: 10, scale: 2, defaut: 0, comment: "比上一次增长比率"
+      t.decimal :moment_rate, precision: 10, scale: 3, defaut: 0, comment: "比上一次增长比率"
 
       t.timestamps
     end

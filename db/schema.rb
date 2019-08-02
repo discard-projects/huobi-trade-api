@@ -168,7 +168,7 @@ ActiveRecord::Schema.define(version: 2019_08_02_021232) do
     t.decimal "high", precision: 20, scale: 10, comment: "阶段最高价"
     t.decimal "low", precision: 20, scale: 10, comment: "阶段最低价"
     t.decimal "previous_close", precision: 20, scale: 10, comment: "阶段上一次收盘价"
-    t.decimal "moment_rate", precision: 10, scale: 2, comment: "比上一次增长比率"
+    t.decimal "moment_rate", precision: 10, scale: 3, comment: "比上一次增长比率"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["trade_symbol_id"], name: "index_trade_symbol_histories_on_trade_symbol_id"
