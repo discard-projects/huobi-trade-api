@@ -7,10 +7,8 @@ class TradeSymbolsPriceFetchJob < ApplicationJob
       TradeSymbolPriceFetchJob.perform_later(trade_symbol.id)
     end
 
-    if Time.current.hour == 9
-      TradeSymbol.where(enabled: false).find_each do |trade_symbol|
-        TradeSymbolPriceFetchJob.perform_later(trade_symbol.id)
-      end
+    TradeSymbol.where(enabled: false).find_each do |trade_symbol|
+      TradeSymbolPriceFetchJob.perform_later(trade_symbol.id)
     end
 
     TradeSymbolsPriceFetchJob.set(wait: 1.second).perform_later()
