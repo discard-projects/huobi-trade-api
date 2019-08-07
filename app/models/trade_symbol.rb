@@ -30,7 +30,7 @@ class TradeSymbol < ApplicationRecord
     else
       Rails.cache.fetch("TradeSymbolApiGetPrice:#{self.id}", expires_in: 10.minutes) do
         $slack_bug_notifier&.ping "[`error`] fetch trade_symbol #{self.symbol} price: #{data}", {icon_emoji: ':point_right:', mrkdwn: true} rescue nil
-      end
+      end unless /^767/.match(data['request_error'])
     end
   end
 
