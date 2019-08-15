@@ -66,7 +66,7 @@ class Order < ApplicationRecord
     user = account.user
     huobi_api = user.huobi_api
     if huobi_api
-      price = price.floor(trade_symbol.price_precision)
+      price = side == 'buy' ? price.floor(trade_symbol.price_precision) : price.ceil(trade_symbol.price_precision)
       amount = amount.floor(trade_symbol.amount_precision)
       res = huobi_api.new_order(account.hid, trade_symbol.symbol, side, price, amount.to_i == amount ? amount.to_i : amount)
       if res && res['status'] == 'ok'
