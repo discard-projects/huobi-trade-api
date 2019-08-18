@@ -15,8 +15,6 @@ class BalancesJob < ApplicationJob
     BalancePlan.where(enabled: true).each do |balance_plan|
       BalancePlansEachJob.perform_later(balance_plan.id)
     end
-    sleep 1
-    BalancesJob.perform_later()
-    # BalancesJob.set(wait: 0.01.second).perform_later()
+    BalancesJob.set(wait: 5.second).perform_later()
   end
 end

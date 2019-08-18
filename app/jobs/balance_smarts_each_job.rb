@@ -4,6 +4,16 @@ class BalanceSmartsEachJob < ApplicationJob
   def perform(id)
     # Do something later
     balance_smart = BalanceSmart.find(id)
+    # 通知
+
+    balance_smart_current_price = balance_smart.trade_symbol.current_price
+    if balance_smart_current_price > balance_smart.avg_price
+      Rails.cache.fetch("BalanceSmartsEachJob:BalanceSmart:Win:#{balance_smart.id}", expires_in: 15.seconds) do
+        user.slack_notifier&.ping "-- #{balance_smart.trade_symbol.symbol} current win #{((balance_smart_current_price - balance_smart.avg_price) / balance_smart.avg_price).round(5) * 100}%", {icon_emoji: ':point_right:', mrkdwn: true} rescue nil
+      end
+    end
+
+    # 下单
     balance_smart.with_lock do
       user = balance_smart.user
       huobi_api = user.huobi_api
