@@ -82,14 +82,16 @@ class OrderInterval < ApplicationRecord
   end
 
   def after_commit_status_canceled
-    # 如果取消的卖出订单需要重新下单
-    if self.category == 'category_sell'
-      sell_amount = self.children.status_traded.inject(0) { |sum, child| sum + child.order.resolve_amount }
-      sell_order_interval = balance_interval.order_intervals.create(price: balance_interval.sell_price, amount: sell_amount, category: 'category_sell')
-      if sell_order_interval.may_status_trading?
-        sell_order_interval.status_trading!
-        self.children.each do |buy_order_interval|
-          buy_order_interval.update(parent: sell_order_interval)
+    if self.balance_interval.enabled
+      # 如果取消的卖出订单需要重新下单
+      if self.category == 'category_sell'
+        sell_amount = self.children.status_traded.inject(0) { |sum, child| sum + child.order.resolve_amount }
+        sell_order_interval = balance_interval.order_intervals.create(price: balance_interval.sell_price, amount: sell_amount, category: 'category_sell')
+        if sell_order_interval.may_status_trading?
+          sell_order_interval.status_trading!
+          self.children.each do |buy_order_interval|
+            buy_order_interval.update(parent: sell_order_interval)
+          end
         end
       end
     end
