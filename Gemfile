@@ -4,7 +4,7 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 ruby '2.6.3'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 6.0.0.rc1'
+gem 'rails', '6.0.0.rc2'
 # Use mysql as the database for Active Record
 gem 'mysql2', '>= 0.4.4'
 # Use Puma as the app server
@@ -43,7 +43,7 @@ gem 'timequery'
 # https://github.com/rails-gems/split_routes
 gem 'split_routes'
 # Base Resource include: reform, reform-rails, kaminari, ransack
-gem 'ransack'
+gem 'ransack', github: "activerecord-hackery/ransack", ref: "aada8"
 gem 'kaminari'
 gem 'reform'
 gem 'reform-rails'

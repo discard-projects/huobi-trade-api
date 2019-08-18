@@ -14,10 +14,10 @@ require 'mina_sidekiq/tasks'
 #   branch       - Branch name to deploy. (needed by mina/git)
 
 set :application_name, 'huobi-api'
-set :domain, 'root@104.199.175.127'
+set :domain, 'deploy@47.100.235.38'
 set :deploy_to, '/mnt/www/huobi/huobi-api'
 set :repository, 'git@gitee.com:huobigroup/huobi-auto-trade.git'
-set :branch, 'master'
+set :branch, 'prod'
 
 set :sidekiq_pid, "#{fetch(:shared_path)}/tmp/pids/sidekiq.pid"
 set :sidekiq_processes, 2
