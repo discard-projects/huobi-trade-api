@@ -10,6 +10,12 @@ class OrdersFetchJob < ApplicationJob
         if trade_symbol.users.include? user
           # 创建job获取 用户对应 trade_symbol的订单
           OrdersUserTradeSymbolFetchJob.perform_later(user.id, trade_symbol.id)
+        else
+          # 用户没有包含在trade_symbol的话每隔15分钟拉取一次
+          Rails.cache.fetch("OrdersFetchJob:Exclude:#{trade_symbol.id}:User#{user.id}", expires_in: 15.seconds) do
+            # 创建job获取 用户对应 trade_symbol的订单
+            OrdersUserTradeSymbolFetchJob.perform_later(user.id, trade_symbol.id)
+          end
         end
       end
 

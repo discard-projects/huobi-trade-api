@@ -5,7 +5,6 @@ class BalanceSmartsEachJob < ApplicationJob
     # Do something later
     balance_smart = BalanceSmart.find(id)
     # 通知
-
     balance_smart_current_price = balance_smart.trade_symbol.current_price
     if balance_smart_current_price > balance_smart.avg_price
       Rails.cache.fetch("BalanceSmartsEachJob:BalanceSmart:Win:#{balance_smart.id}", expires_in: 15.seconds) do
