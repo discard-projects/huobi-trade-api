@@ -2,7 +2,7 @@ class Api::V1::OrdersController < Api::V1::BaseController
   # skip_before_action :authenticate_user!
 
   def index
-    super current_user.orders.roots
+    super current_user.orders.roots.order(:created_at, :updated_at)
   end
 
   def create
