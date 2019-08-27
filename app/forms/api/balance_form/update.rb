@@ -79,7 +79,7 @@ module Api::BalanceForm
             errors.add(:open_price, "open_price[#{self.open_price}] 价格必须小于等于当前值 #{trade_symbol.current_price}") if self.open_price.to_f > trade_symbol.current_price
           end
           errors.add(:begin_price, "begin_price 价格必须小于等于 open_price #{self.open_price}") if self.begin_price.to_f > self.open_price.to_f
-          errors.add(:end_price, "end_price 价格必须大于等于 open_price #{self.open_price}") if self.open_price.to_f >= self.end_price.to_f
+          errors.add(:end_price, "end_price 价格必须大于等于 open_price #{self.open_price}") if self.open_price.to_f > self.end_price.to_f
         end
       end
     end
