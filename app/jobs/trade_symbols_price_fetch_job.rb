@@ -4,7 +4,15 @@ class TradeSymbolsPriceFetchJob < ApplicationJob
   def perform(*args)
     # Do something later
     TradeSymbol.where(enabled: true).find_each do |trade_symbol|
-      TradeSymbolPriceFetchJob.perform_later(trade_symbol.id)
+      if trade_symbol.exist_enabled_config?
+        Rails.cache.fetch("TradeSymbolsPriceFetchJob:ExistEnabledConfig", expires_in: 1.seconds) do
+          TradeSymbolPriceFetchJob.perform_later(trade_symbol.id)
+        end
+      else
+        Rails.cache.fetch("TradeSymbolsPriceFetchJob:NotExistEnabledConfig", expires_in: 45.seconds) do
+          TradeSymbolPriceFetchJob.perform_later(trade_symbol.id)
+        end
+      end
     end
 
     # if Time.current.hour == 0
@@ -13,6 +21,7 @@ class TradeSymbolsPriceFetchJob < ApplicationJob
     #   end
     # end
 
-    TradeSymbolsPriceFetchJob.set(wait: 3.second).perform_later()
+    # TradeSymbolsPriceFetchJob.set(wait: 10.second).perform_later()
+    TradeSymbolsPriceFetchJob.perform_later()
   end
 end

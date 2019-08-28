@@ -1,6 +1,8 @@
 class TradeSymbol < ApplicationRecord
 
   has_many :balance_intervals
+  has_many :balance_plans
+  has_many :balance_smarts
   has_many :trade_symbol_histories
 
   after_commit :after_commit
@@ -20,6 +22,10 @@ class TradeSymbol < ApplicationRecord
 
   def users
     User.joins(:balance_intervals).where('balance_intervals.trade_symbol_id = ?', self.id).uniq | User.joins(:balance_smarts).where('balance_smarts.trade_symbol_id = ?', self.id).uniq | User.joins(:balance_plans).where('balance_plans.trade_symbol_id = ?', self.id).uniq
+  end
+
+  def exist_enabled_config?
+    self.balance_intervals.where(enabled: true).present? || self.balance_plans.where(enabled: true).present? || self.balance_smarts.where(enabled: true).present?
   end
 
   def update_market_detail
