@@ -9,7 +9,7 @@ class OrdersFetchJob < ApplicationJob
       TradeSymbol.where(enabled: true).find_each do |trade_symbol|
         if trade_symbol.users.include? user
           # 创建job获取 用户对应 trade_symbol的订单
-          Rails.cache.fetch("OrdersFetchJob:Include:#{trade_symbol.id}:User#{user.id}", expires_in: 1.second) do
+          Rails.cache.fetch("OrdersFetchJob:Include:#{trade_symbol.id}:User#{user.id}", expires_in: 2.seconds) do
             OrdersUserTradeSymbolFetchJob.perform_later(user.id, trade_symbol.id)
           end
         else
