@@ -21,8 +21,8 @@ class OrdersFetchJob < ApplicationJob
         end
       end
 
-      # 3分钟
-      Rails.cache.fetch("OrdersFetchJob:BeforeDate", expires_in: 3.minutes) do
+      # 5秒
+      Rails.cache.fetch("OrdersFetchJob:BeforeDate", expires_in: 5.seconds) do
         user.orders.status_created.where('created_at < ?', Time.now - 24.hours).group(:trade_symbol_id).select(:trade_symbol_id).each do |o|
           order = user.orders.status_created.where(trade_symbol_id: o.trade_symbol_id).first
           if order && order.try(:hid)
