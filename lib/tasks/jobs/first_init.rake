@@ -10,8 +10,8 @@ namespace :jobs do
     BalancesFetchJob.perform_later()
     # 10s一次
     OrdersFetchJob.perform_later()
-    # 35 minutes one time
-    # OrdersFilledJob.perform_later()
+    # 1s one time 查询 24小时前的订单为进行中的成交记录
+    OrdersFilledJob.perform_later()
 
     BalancesJob.perform_later()
 

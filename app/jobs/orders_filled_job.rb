@@ -17,6 +17,6 @@ class OrdersFilledJob < ApplicationJob
         end
       end
     end
-    OrdersFilledJob.set(wait: 35.minutes).perform_later()
+    OrdersFilledJob.set(wait: 1.second).perform_later()
   end
 end
