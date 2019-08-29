@@ -32,7 +32,7 @@ class OrdersFetchJob < ApplicationJob
       end
     end
     # sleep 1
-    # OrdersFetchJob.perform_later()
+    OrdersFetchJob.perform_later()
     # OrdersFetchJob.set(wait: 5.second).perform_later()
   end
 end
