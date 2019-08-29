@@ -10,8 +10,8 @@ class OrdersUserTradeSymbolFetchJob < ApplicationJob
     if huobi_api
       data = huobi_api.orders trade_symbol.symbol, fetch_date
       data && data['data'] && data['data'].each do |o|
-        # 如果 订单创建时间 20s内 发现是api下单，却没有找到该订单，则跳过，防止线程冲突，创建相同订单的hid
-        if Order.find_by(hid: o['id']).blank? && o['source'] == 'api' && Time.at(o['created-at']/1000).to_datetime + 20.seconds > Time.current
+        # 如果 订单创建时间 60s内 发现是api下单，却没有找到该订单，则跳过，防止线程冲突，创建相同订单的hid
+        if Order.find_by(hid: o['id']).blank? && o['source'] == 'api' && Time.at(o['created-at']/1000).to_datetime + 60.seconds > Time.current
           next
         end
         order = Order.find_or_create_by(hid: o['id'], user:user, account: Account.find_by(hid: o['account-id']), trade_symbol: trade_symbol)
