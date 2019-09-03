@@ -12,7 +12,7 @@ class BalancePlan < ApplicationRecord
   end
 
   def next_should_buy_price
-    last_traded_buy_order = self.order_plans.category_buy.status_traded.first
+    last_traded_buy_order = self.order_plans.category_buy.status_traded.order(buy_price: :asc).first
     if last_traded_buy_order
       last_traded_buy_order.buy_price - self.interval_price
     else
