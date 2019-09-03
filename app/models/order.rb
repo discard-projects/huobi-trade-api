@@ -1,6 +1,7 @@
 class Order < ApplicationRecord
   include AASM
   has_ancestry
+  has_footprints
 
   belongs_to :user
   belongs_to :account
