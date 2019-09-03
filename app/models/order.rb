@@ -38,7 +38,7 @@ class Order < ApplicationRecord
   end
 
   def resolve_amount
-    (self.field_amount - self.field_fees).floor(trade_symbol.price_precision)
+    ([self.field_amount, self.amount].max - self.field_fees).floor(trade_symbol.price_precision)
   end
 
   def field_profit_to_usdt
