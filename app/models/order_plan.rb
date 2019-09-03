@@ -1,6 +1,7 @@
 class OrderPlan < ApplicationRecord
   include AASM
   has_ancestry
+  has_footprints
 
   belongs_to :balance_plan
   has_one :order, as: :tradable, dependent: :nullify
